@@ -41,6 +41,9 @@ public class ChessPosition {
         return row == that.row && column == that.column;
     }
 
-    //@Override
+    @Override
+    public int hashCode(){
+        return 31 * row + column;
+    }
 
 }
