@@ -48,4 +48,10 @@ public class ChessPosition {
         return Objects.hash(row, column);
     }
 
+    @Override
+    public String toString(){
+        char file = (char) ('a' + column);
+        int rank = row + 1;
+        return "" + file + rank;
+    }
 }

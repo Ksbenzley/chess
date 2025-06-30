@@ -54,7 +54,17 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        //return new ArrayList<>();
+        PMCalculator calculator;
+
+        switch (this.getPieceType()){
+            case KING:
+                calculator = new KingMovesCalculator();
+                break;
+            default:
+                return new ArrayList<>();
+        }
+
+        return calculator.pieceMoves(board, myPosition);
     }
 
     @Override
