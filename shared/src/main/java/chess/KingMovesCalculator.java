@@ -18,9 +18,15 @@ public class KingMovesCalculator extends PMCalculator{
             int newRow = position.getRow() + dir[0];
             int newCol = position.getColumn() + dir[1];
 
-            if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
-                ChessPosition x = new ChessPosition(newRow, newCol);
-                moves.add(new ChessMove(position, x, null));
+            if (newRow <= 8 && newRow >= 1 && newCol <= 8 && newCol >= 1){
+                ChessPosition newPos = new ChessPosition(newRow, newCol);
+                ChessPiece destinationPiece = board.getPiece(newPos);
+                ChessPiece myPiece = board.getPiece(position);
+
+                if (destinationPiece == null || myPiece.getTeamColor() != destinationPiece.getTeamColor()){
+                    moves.add(new ChessMove(position, newPos, null));
+                }
+
             }
         }
         return moves;
