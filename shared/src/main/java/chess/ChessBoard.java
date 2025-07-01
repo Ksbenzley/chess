@@ -10,8 +10,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    //pushing with this comment
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
 
