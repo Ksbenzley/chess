@@ -64,10 +64,8 @@ public class ChessMove {
 
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(startPosition);
-        sb.append("->");
-        sb.append(endPosition);
-        return sb.toString();
+        String string = String.format("%s, %s",
+            startPosition.toString(), endPosition.toString());
+        return string;
     }
 }

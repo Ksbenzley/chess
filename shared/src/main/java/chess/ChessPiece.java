@@ -60,6 +60,12 @@ public class ChessPiece {
             case KING:
                 calculator = new KingMovesCalculator();
                 break;
+            case BISHOP:
+                calculator = new BishopMovesCalculator();
+                break;
+            case QUEEN:
+                calculator = new QueenMovesCalculator();
+                break;
             default:
                 return new ArrayList<>();
         }
