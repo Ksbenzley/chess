@@ -28,11 +28,7 @@ public class KnightMovesCalculator extends PMCalculator{
                     moves.add(new ChessMove(position, newPos, null));
                 }
             }
-
         }
-
-
-
         return moves;
     }
 }
