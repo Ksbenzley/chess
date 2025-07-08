@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -68,6 +69,7 @@ public class ChessGame {
         for(ChessMove move : possibleMoves){
             ChessPosition startPos = move.getStartPosition();
             ChessPosition endPos = move.getEndPosition();
+            TeamColor teamColor = myPiece.getTeamColor();
             ChessBoard newBoard = chessBoard.copy();
 
             newBoard.addPiece(endPos, myPiece);
@@ -76,7 +78,7 @@ public class ChessGame {
             ChessBoard ogBoard = this.chessBoard;
             chessBoard = newBoard;
 
-            if(isInCheck(teamTurn)){
+            if(isInCheck(teamColor)){
                 toRemove.add(move);
             }
             chessBoard = ogBoard;
@@ -92,8 +94,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
-        //give list of validMoves and make decison?
+
     }
 
     /**
@@ -103,29 +104,30 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition myKingPos = new ChessPosition();
-        Collection<Collection<ChessMove>> moveList = new ArrayList<>();
+        ChessPosition myKingPos = null;
+        Collection<ChessMove> moveList = new ArrayList<>();
 
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
+        for(int i = 1; i <= 8; i++){
+            for(int j = 1; j <= 8; j++){
                 ChessPosition currentPosition = new ChessPosition(i, j);
-                if(chessBoard.getPiece(currentPosition).getPieceType() == ChessPiece.PieceType.KING &&
-                chessBoard.getPiece(currentPosition).getTeamColor() == teamColor){
-                    myKingPos = currentPosition;
-                }
+                ChessPiece piece = chessBoard.getPiece(currentPosition);
 
-                if(chessBoard.getPiece(currentPosition).getTeamColor() != teamColor){
-                    moveList.add(chessBoard.getPiece(currentPosition).pieceMoves(chessBoard, currentPosition));
+                if(piece != null) {
+                    ChessPiece.PieceType pieceTypeOfPiece = piece.getPieceType();
+                    ChessGame.TeamColor teamColorOfPiece = piece.getTeamColor();
+                    if (pieceTypeOfPiece == ChessPiece.PieceType.KING && teamColorOfPiece == teamColor){
+                        myKingPos = currentPosition;
+                    }
+                    if (chessBoard.getPiece(currentPosition).getTeamColor() != teamColor) {
+                        moveList.addAll(chessBoard.getPiece(currentPosition).pieceMoves(chessBoard, currentPosition));
+                    }
                 }
-
             }
         }
 
-        for(Collection<ChessMove> moveSet : moveList){
-            for(ChessMove move : moveSet){
-                if(move.getEndPosition() == myKingPos){
-                    return true;
-                }
+        for(ChessMove move : moveList){
+            if(move.getEndPosition().equals(myKingPos)){
+                return true;
             }
         }
         return false;
@@ -172,5 +174,19 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return chessBoard;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return teamTurn == chessGame.teamTurn && Objects.equals(chessBoard, chessGame.chessBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, chessBoard);
     }
 }
