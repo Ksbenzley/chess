@@ -95,6 +95,7 @@ public class ChessGame {
         ChessPosition endPos = move.getEndPosition();
         ChessPiece piece = chessBoard.getPiece(startPos);
 
+        //checks if a move is valid
         if (piece == null) {
             throw new InvalidMoveException();
         }
@@ -113,6 +114,7 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
 
+        //PAWN has special cases to check: promotionType
         if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
             if(piece.getTeamColor() == TeamColor.WHITE && endPos.getRow() == 8){
                 ChessPiece.PieceType promotionType = move.getPromotionPiece();
