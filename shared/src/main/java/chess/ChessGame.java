@@ -16,6 +16,7 @@ public class ChessGame {
     ChessBoard chessBoard;
 
     public ChessGame() {
+        //resets starting team and board at the beginning of every game
         teamTurn = TeamColor.WHITE;
         chessBoard = new ChessBoard();
         chessBoard.resetBoard();
@@ -228,8 +229,8 @@ public class ChessGame {
                 ChessPosition curPos = new ChessPosition(i, j);
 
                 if(chessBoard.getPiece(curPos) != null && chessBoard.getPiece(curPos).getTeamColor() == teamColor){
-                    Collection<ChessMove> vMoves = validMoves(curPos);
-                    if(!vMoves.isEmpty()){
+                    Collection<ChessMove> valMoves = validMoves(curPos);
+                    if(!valMoves.isEmpty()){
                         return false;
                     }
                 }
@@ -256,8 +257,8 @@ public class ChessGame {
             for(int j = 1; j <= 8; j++){
                 ChessPosition curPos = new ChessPosition(i, j);
                 if(chessBoard.getPiece(curPos) != null && chessBoard.getPiece(curPos).getTeamColor() == teamColor){
-                    Collection<ChessMove> vMoves = validMoves(curPos);
-                    if(!vMoves.isEmpty()){
+                    Collection<ChessMove> valMoves = validMoves(curPos);
+                    if(!valMoves.isEmpty()){
                         return false;
                     }
                 }
