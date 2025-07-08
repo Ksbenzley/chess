@@ -13,10 +13,12 @@ import java.util.Objects;
 public class ChessGame {
 
     TeamColor teamTurn;
-    private ChessBoard chessBoard;
+    ChessBoard chessBoard;
 
     public ChessGame() {
-
+        teamTurn = TeamColor.WHITE;
+        chessBoard = new ChessBoard();
+        chessBoard.resetBoard();
     }
 
     /**
@@ -254,13 +256,13 @@ public class ChessGame {
                 ChessPosition curPos = new ChessPosition(i, j);
                 if(chessBoard.getPiece(curPos) != null && chessBoard.getPiece(curPos).getTeamColor() == teamColor){
                     Collection<ChessMove> vMoves = validMoves(curPos);
-                    if(vMoves.isEmpty()){
-                        return true;
+                    if(!vMoves.isEmpty()){
+                        return false;
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**
