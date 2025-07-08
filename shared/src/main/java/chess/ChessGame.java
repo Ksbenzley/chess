@@ -184,6 +184,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+
         ChessPosition myKingPos = null;
         Collection<ChessMove> moveList = new ArrayList<>();
 
@@ -220,8 +221,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //throw new RuntimeException("Not implemented");
-        //if validMoves == empty && in check:
+        //if validMoves == empty && in check for every piece of same color:
         //checkmate
         for(int i = 1; i <= 8; i++){
             for(int j = 1; j <= 8; j++){
@@ -247,8 +247,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //throw new RuntimeException("Not implemented");
-        //if validMoves == empty && not in check:
+        //if validMoves == empty && not in check for every piece:
         //stalemate
         if(isInCheck(teamColor)){
             return false;
