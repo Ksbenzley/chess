@@ -60,10 +60,6 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = myPiece.pieceMoves(chessBoard, startPosition);
         Collection<ChessMove> toRemove = new ArrayList<>();
 
-        if (myPiece == null) {
-            return toRemove;
-        }
-
         for (ChessMove move : possibleMoves) {
             ChessPosition startPos = move.getStartPosition();
             ChessPosition endPos = move.getEndPosition();
