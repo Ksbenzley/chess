@@ -13,6 +13,22 @@ public class userService {
         }
     }
 
+    public static String loginUser(String username, String password, String authToken){
+        if (checkUser(username)){
+            if(memoryUserDAO.checkPass(username, password)){
+                if(memoryUserDAO.checkAuthToken(username, authToken)){
+                    return memoryUserDAO.loginUser(username);
+                }else{
+                    throw new NotAuthorizedException("user is unauthorized");
+                }
+            }else{
+                throw new PasswordsDontMatchException("password is incorrect");
+            }
+        }else{
+            throw new UserDoesNotExistException("user does not exist");
+        }
+    }
+
     public static Boolean checkUser(String user){
         return memoryUserDAO.checkForUser(user);
     }

@@ -16,8 +16,29 @@ public class MemoryUserDAO implements UserDAO{
         return authDB.get(username).toString();
     }
 
+    public String loginUser(String username){
+        authDB.put(username, new AuthData(username, createAuthToken()));
+        return authDB.get(username).toString();
+    }
+
     public Boolean checkForUser(String username){
         if(userDB.containsKey(username)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public Boolean checkAuthToken(String username, String authToken){
+        if(authDB.get(username).authToken().equals(authToken)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public Boolean checkPass(String username, String password){
+        if(userDB.get(username).password().equals(password)){
             return true;
         }else{
             return false;
