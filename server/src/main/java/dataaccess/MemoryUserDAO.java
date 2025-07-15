@@ -29,8 +29,8 @@ public class MemoryUserDAO implements UserDAO{
         }
     }
 
-    public Boolean checkAuthToken(String username, String authToken){
-        if(authDB.get(username).authToken().equals(authToken)){
+    public Boolean checkAuthToken(String username){
+        if(authDB.containsKey(username)){
             return true;
         }else{
             return false;

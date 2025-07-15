@@ -13,10 +13,10 @@ public class userService {
         }
     }
 
-    public static String loginUser(String username, String password, String authToken){
+    public static String loginUser(String username, String password){
         if (checkUser(username)){
             if(memoryUserDAO.checkPass(username, password)){
-                if(memoryUserDAO.checkAuthToken(username, authToken)){
+                if(memoryUserDAO.checkAuthToken(username)){
                     return memoryUserDAO.loginUser(username);
                 }else{
                     throw new NotAuthorizedException("user is unauthorized");

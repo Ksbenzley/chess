@@ -16,7 +16,7 @@ public class handler{
             String body = request.body();
             var data = serializer.fromJson(body, LoginRequest.class);
 
-            String authToken = userService.loginUser(data.username, data.password, data.authToken);
+            String authToken = userService.loginUser(data.username, data.password);
 
             response.status(200);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
