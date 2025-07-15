@@ -1,32 +1,54 @@
 package server;
+import dataaccess.AlreadyTakenException;
 import service.userService;
 import com.google.gson.Gson;
 import spark.*;
 
-public class handler implements Route{
+public class handler{
 
-    @Override
-    public Object handle(Request req, Response res) throws Exception{
-
-        return res;
-    }
-
-    public Object register(Request request, Response response) {
-        //serializing from Json to Java
-        String body = request.body();
+    public static Object register(Request request, Response response) {
         var serializer = new Gson();
-        var data = serializer.fromJson(body, RegisterRequest.class);
 
-        userService.registerUser(data.username, data.password, data.eMail);
+        try {
+            //serializing from Json to Java
+            String body = request.body();
+            var data = serializer.fromJson(body, RegisterRequest.class);
 
-        return response;
+            //gets the authToken and registers the user
+            String authToken = userService.registerUser(data.username, data.password, data.email);
+            RegisterResponse result = new RegisterResponse(data.username, authToken);
 
+            response.status(200);
+            //response.type("application/JSON");
+            return serializer.toJson(result);
+        }catch (AlreadyTakenException x){
+            response.status(403);
+            return serializer.toJson(new ErrorResponse("username already taken" + x.getMessage()));
+        }
     }
 
     private static class RegisterRequest {
         String username;
         String password;
-        String eMail;
+        String email;
+    }
+
+    private static class RegisterResponse {
+        String username;
+        String authToken;
+
+        RegisterResponse(String username, String authToken) {
+            this.username = username;
+            this.authToken = authToken;
+        }
+    }
+
+    private static class ErrorResponse {
+        String message;
+
+        ErrorResponse(String message) {
+            this.message = message;
+        }
     }
 
 }
