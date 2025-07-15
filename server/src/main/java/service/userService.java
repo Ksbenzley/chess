@@ -2,25 +2,22 @@ package service;
 import dataaccess.*;
 
 public class userService {
-    static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
 
-    public static String registerUser(String user, String pass, String email){
+
+    public static String registerUser(String user, String pass, String email, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO){
         //checks if username is already taken -else- registers the user
-        if (checkUser(user)){
+        if (checkUser(user, memoryUserDAO)){
             throw new AlreadyTakenException("username taken");
         }else{
-            return memoryUserDAO.addUser(user, pass, email);
+            memoryUserDAO.addUser(user, pass, email);
+            return memoryAuthDAO.loginUser(user);
         }
     }
 
-    public static String loginUser(String username, String password){
-        if (checkUser(username)){
+    public static String loginUser(String username, String password, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO){
+        if (checkUser(username, memoryUserDAO)){
             if(memoryUserDAO.checkPass(username, password)){
-                if(memoryUserDAO.checkAuthToken(username)){
-                    return memoryUserDAO.loginUser(username);
-                }else{
-                    throw new NotAuthorizedException("user is unauthorized");
-                }
+                return memoryAuthDAO.loginUser(username);
             }else{
                 throw new PasswordsDontMatchException("password is incorrect");
             }
@@ -29,7 +26,7 @@ public class userService {
         }
     }
 
-    public static Boolean checkUser(String user){
+    public static Boolean checkUser(String user, MemoryUserDAO memoryUserDAO){
         return memoryUserDAO.checkForUser(user);
     }
 }

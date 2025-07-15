@@ -1,13 +1,34 @@
 package server;
-import dataaccess.AlreadyTakenException;
-import dataaccess.NotAuthorizedException;
-import dataaccess.PasswordsDontMatchException;
-import dataaccess.UserDoesNotExistException;
-import service.userService;
+import dataaccess.*;
+import service.*;
 import com.google.gson.Gson;
 import spark.*;
 
 public class handler{
+    static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
+    static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
+
+    public static Object logout(Request request, Response response){
+        var serializer = new Gson();
+
+        try{
+            String body = request.body();
+            var data = serializer.fromJson(body, LogoutRequest.class);
+
+            DatabaseService.logout(data.authToken, memoryAuthDAO);
+            response.status(200);
+            return "{}";
+        }catch(NotAuthorizedException x){
+            response.status(401);
+            return new ErrorResponse(x.getMessage());
+        }
+    }
+
+    public static Object clear(Request request, Response response){
+        DatabaseService.clear(memoryUserDAO, memoryAuthDAO);
+        response.status(200);
+        return "{}";
+    }
 
     public static Object login(Request request, Response response){
        var serializer = new Gson();
@@ -16,7 +37,7 @@ public class handler{
             String body = request.body();
             var data = serializer.fromJson(body, LoginRequest.class);
 
-            String authToken = userService.loginUser(data.username, data.password);
+            String authToken = userService.loginUser(data.username, data.password, memoryUserDAO, memoryAuthDAO);
 
             response.status(200);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
@@ -39,7 +60,7 @@ public class handler{
             var data = serializer.fromJson(body, RegisterRequest.class);
 
             //gets the authToken and registers the user
-            String authToken = userService.registerUser(data.username, data.password, data.email);
+            String authToken = userService.registerUser(data.username, data.password, data.email, memoryUserDAO, memoryAuthDAO);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
 
             response.status(200);
@@ -49,6 +70,10 @@ public class handler{
             response.status(403);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
+    }
+
+    private static class LogoutRequest {
+        String authToken;
     }
 
     private static class RegisterRequest {
@@ -70,7 +95,6 @@ public class handler{
     private static class LoginRequest{
         String username;
         String password;
-        String authToken;
     }
 
     private static class ErrorResponse {
