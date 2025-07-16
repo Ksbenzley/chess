@@ -13,6 +13,7 @@ public class handler{
     static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
 
     public static Object listGames(Request request, Response response){
+        response.type("application/json");
         var serializer = new Gson();
         try{
             String body = request.headers("authorization");
@@ -25,11 +26,12 @@ public class handler{
 
         }catch(NotAuthorizedException x){
             response.status(401);
-            return new ErrorResponse(x.getMessage());
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
     public static Object createGame(Request request, Response response){
+        response.type("application/json");
         var serializer = new Gson();
 
         try{
@@ -44,23 +46,29 @@ public class handler{
             return serializer.toJson(result);
         }catch(NotAuthorizedException x){
             response.status(401);
-            return new ErrorResponse(x.getMessage());
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
     public static Object logout(Request request, Response response){
+        response.type("application/json");
         var serializer = new Gson();
-
+        String body = request.body();
+        var data = serializer.fromJson(body, LogoutRequest.class);
+        if(data == null){
+            response.status(200);
+            return "{}";
+        }
         try{
-            String body = request.body();
-            var data = serializer.fromJson(body, LogoutRequest.class);
-
             DatabaseService.logout(data.authToken, memoryAuthDAO);
             response.status(200);
             return "{}";
         }catch(NotAuthorizedException x){
             response.status(401);
-            return new ErrorResponse(x.getMessage());
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(BadRequestException x){
+            response.status(400);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
@@ -71,19 +79,17 @@ public class handler{
     }
 
     public static Object login(Request request, Response response){
-       var serializer = new Gson();
-
+        response.type("application/json");
+        var serializer = new Gson();
+        var data = serializer.fromJson(request.body(), LoginRequest.class);
         try{
-            String body = request.body();
-            var data = serializer.fromJson(body, LoginRequest.class);
-
             String authToken = userService.loginUser(data.username, data.password, memoryUserDAO, memoryAuthDAO);
 
             response.status(200);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
             return serializer.toJson(result);
-        }catch(UserDoesNotExistException | PasswordsDontMatchException x){
-            response.status(403);
+        }catch(BadRequestException x){
+            response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }catch(NotAuthorizedException x){
             response.status(401);
@@ -92,7 +98,7 @@ public class handler{
     }
 
     public static Object register(Request request, Response response) {
-
+        response.type("application/json");
         var serializer = new Gson();
 
         try {
@@ -108,6 +114,9 @@ public class handler{
             return serializer.toJson(result);
         }catch (AlreadyTakenException x){
             response.status(403);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch (BadRequestException x){
+            response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }

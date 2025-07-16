@@ -6,8 +6,11 @@ public class userService {
 
     public static String registerUser(String user, String pass, String email, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO){
         //checks if username is already taken -else- registers the user
+        if (user == null || pass == null){
+            throw new BadRequestException("Error: bad request");
+        }
         if (checkUser(user, memoryUserDAO)){
-            throw new AlreadyTakenException("username taken");
+            throw new AlreadyTakenException("Error: username already taken");
         }else{
             memoryUserDAO.addUser(user, pass, email);
             return memoryAuthDAO.loginUser(user);
@@ -15,14 +18,18 @@ public class userService {
     }
 
     public static String loginUser(String username, String password, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO){
+        if(username == null || password == null){
+            throw new BadRequestException("Error: bad request");
+        }
         if (checkUser(username, memoryUserDAO)){
             if(memoryUserDAO.checkPass(username, password)){
                 return memoryAuthDAO.loginUser(username);
             }else{
-                throw new PasswordsDontMatchException("password is incorrect");
+                throw new NotAuthorizedException("Error: unauthorized");
             }
         }else{
-            throw new UserDoesNotExistException("user does not exist");
+            throw new NotAuthorizedException("Error: unauthorized");
+
         }
     }
 
