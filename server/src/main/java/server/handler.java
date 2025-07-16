@@ -7,6 +7,39 @@ import spark.*;
 public class handler{
     static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
     static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
+    static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+
+    public static Object listGames(Request request, Response response){
+        try{
+            String body = request.headers("authorization");
+            response.status(200);
+            return GameService.listGames(body, memoryAuthDAO, memoryGameDAO);
+        }catch(NotAuthorizedException x){
+            response.status(401);
+            return new ErrorResponse(x.getMessage());
+        }
+    }
+
+    public static Object createGame(Request request, Response response){
+        var serializer = new Gson();
+
+        try{
+            String authToken = request.headers("authorization");
+            String body = request.body();
+            var data = serializer.fromJson(body, CreateGameRequest.class);
+
+            int gameID = GameService.createGame(authToken, data.gameName, memoryAuthDAO, memoryGameDAO);
+            response.status(200);
+
+            String str = String.valueOf(gameID);
+            createGameResponse result = new createGameResponse(str);
+
+            return serializer.toJson(result);
+        }catch(NotAuthorizedException x){
+            response.status(401);
+            return new ErrorResponse(x.getMessage());
+        }
+    }
 
     public static Object logout(Request request, Response response){
         var serializer = new Gson();
@@ -43,7 +76,7 @@ public class handler{
             RegisterResponse result = new RegisterResponse(data.username, authToken);
             return serializer.toJson(result);
         }catch(UserDoesNotExistException | PasswordsDontMatchException x){
-            response.status(400);
+            response.status(403);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }catch(NotAuthorizedException x){
             response.status(401);
@@ -76,6 +109,10 @@ public class handler{
         String authToken;
     }
 
+    private static class CreateGameRequest {
+        String gameName;
+    }
+
     private static class RegisterRequest {
         String username;
         String password;
@@ -89,6 +126,14 @@ public class handler{
         RegisterResponse(String username, String authToken) {
             this.username = username;
             this.authToken = authToken;
+        }
+    }
+
+    private static class createGameResponse {
+        String gameID;
+
+        createGameResponse(String gameID){
+            this.gameID = gameID;
         }
     }
 
