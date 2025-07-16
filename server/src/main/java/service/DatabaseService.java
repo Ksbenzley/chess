@@ -14,6 +14,7 @@ public class DatabaseService {
     public static void logout(String authToken, MemoryAuthDAO memoryAuthDAO){
         if(checkAuthToken(authToken, memoryAuthDAO)){
             memoryAuthDAO.logout(memoryAuthDAO.getUser(authToken));
+            return;
         }
         throw new NotAuthorizedException("Error: unauthorized");
     }

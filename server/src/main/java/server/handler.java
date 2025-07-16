@@ -12,6 +12,15 @@ public class handler{
     static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
     static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
 
+    public static Object joinGame(Request request, Response response){
+        response.type("application/json");
+        var serializer = new Gson();
+        String authToken = request.headers("authorization");
+        String body = request.body();
+
+
+    }
+
     public static Object listGames(Request request, Response response){
         response.type("application/json");
         var serializer = new Gson();
@@ -47,20 +56,22 @@ public class handler{
         }catch(NotAuthorizedException x){
             response.status(401);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(BadRequestException x){
+            response.status(400);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
     public static Object logout(Request request, Response response){
         response.type("application/json");
         var serializer = new Gson();
-        String body = request.body();
-        var data = serializer.fromJson(body, LogoutRequest.class);
-        if(data == null){
-            response.status(200);
-            return "{}";
+        String authToken = request.headers("authorization");
+        if(authToken == null){
+            response.status(401);
+            return serializer.toJson(new ErrorResponse("Error: bad request"));
         }
         try{
-            DatabaseService.logout(data.authToken, memoryAuthDAO);
+            DatabaseService.logout(authToken, memoryAuthDAO);
             response.status(200);
             return "{}";
         }catch(NotAuthorizedException x){
@@ -121,8 +132,9 @@ public class handler{
         }
     }
 
-    private static class LogoutRequest {
-        String authToken;
+    private static class JoinGameRequest {
+        String playerColor;
+        int gameID;
     }
 
     private static class CreateGameRequest {
@@ -141,10 +153,9 @@ public class handler{
         public listGamesResponse(List<GameData> games){
             this.games = games;
         }
-
-        public List<GameData> getGames(){
-            return games;
-        }
+//        public List<GameData> getGames(){
+//            return games;
+//        }
     }
 
     private static class RegisterResponse {
