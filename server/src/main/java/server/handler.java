@@ -17,8 +17,22 @@ public class handler{
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         String body = request.body();
+        var data = serializer.fromJson(body, JoinGameRequest.class);
 
-
+        try{
+            GameService.joinGame(authToken, data.playerColor, data.gameID, memoryAuthDAO, memoryGameDAO, memoryUserDAO);
+            response.status(200);
+            return "{}";
+        }catch(BadRequestException x){
+            response.status(400);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(AlreadyTakenException x){
+            response.status(403);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(NotAuthorizedException x){
+            response.status(401);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }
     }
 
     public static Object listGames(Request request, Response response){
