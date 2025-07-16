@@ -1,5 +1,8 @@
 package service;
 import dataaccess.*;
+import model.GameData;
+
+import java.util.ArrayList;
 
 public class GameService {
 
@@ -15,9 +18,9 @@ public class GameService {
         }
     }
 
-    public static CharSequence listGames(String authToken, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO){
+    public static ArrayList<GameData> listGames(String authToken, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO){
         if(memoryAuthDAO.checkUserAuth(authToken)){
-            return (CharSequence) memoryGameDAO.getList();
+            return memoryGameDAO.getList();
         }else{
             throw new NotAuthorizedException("Error: unauthorized");
         }

@@ -1,8 +1,11 @@
 package server;
 import dataaccess.*;
+import model.*;
 import service.*;
 import com.google.gson.Gson;
 import spark.*;
+
+import java.util.List;
 
 public class handler{
     static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
@@ -13,10 +16,9 @@ public class handler{
         var serializer = new Gson();
         try{
             String body = request.headers("authorization");
-            response.status(200);
 
-            String str = String.join(", ", GameService.listGames(body, memoryAuthDAO, memoryGameDAO));
-            listGamesResponse result = new listGamesResponse(str);
+            List<GameData> games = GameService.listGames(body, memoryAuthDAO, memoryGameDAO);
+            listGamesResponse result = new listGamesResponse(games);
 
             response.status(200);
             return serializer.toJson(result);
@@ -36,11 +38,9 @@ public class handler{
             var data = serializer.fromJson(body, CreateGameRequest.class);
 
             int gameID = GameService.createGame(authToken, data.gameName, memoryAuthDAO, memoryGameDAO);
+
             response.status(200);
-
-            String str = String.valueOf(gameID);
-            createGameResponse result = new createGameResponse(str);
-
+            createGameResponse result = new createGameResponse(gameID);
             return serializer.toJson(result);
         }catch(NotAuthorizedException x){
             response.status(401);
@@ -127,10 +127,14 @@ public class handler{
     }
 
     private static class listGamesResponse {
-        String list;
+        private List<GameData> games;
 
-        listGamesResponse(String list){
-            this.list = list;
+        public listGamesResponse(List<GameData> games){
+            this.games = games;
+        }
+
+        public List<GameData> getGames(){
+            return games;
         }
     }
 
@@ -145,9 +149,9 @@ public class handler{
     }
 
     private static class createGameResponse {
-        String gameID;
+        int gameID;
 
-        createGameResponse(String gameID){
+        createGameResponse(int gameID){
             this.gameID = gameID;
         }
     }
