@@ -10,10 +10,17 @@ public class handler{
     static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
 
     public static Object listGames(Request request, Response response){
+        var serializer = new Gson();
         try{
             String body = request.headers("authorization");
             response.status(200);
-            return GameService.listGames(body, memoryAuthDAO, memoryGameDAO);
+
+            String str = String.join(", ", GameService.listGames(body, memoryAuthDAO, memoryGameDAO));
+            listGamesResponse result = new listGamesResponse(str);
+
+            response.status(200);
+            return serializer.toJson(result);
+
         }catch(NotAuthorizedException x){
             response.status(401);
             return new ErrorResponse(x.getMessage());
@@ -117,6 +124,14 @@ public class handler{
         String username;
         String password;
         String email;
+    }
+
+    private static class listGamesResponse {
+        String list;
+
+        listGamesResponse(String list){
+            this.list = list;
+        }
     }
 
     private static class RegisterResponse {
