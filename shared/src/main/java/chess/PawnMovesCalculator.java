@@ -43,13 +43,7 @@ public class PawnMovesCalculator extends PMCalculator{
             if (row == startRow){
                 ChessPosition twoForward = new ChessPosition(row + angle * 2, col);
                 if(inBounds(twoForward) && board.getPiece(twoForward) == null){
-                    if (isPromotionRow(twoForward.getRow(), color)){
-                        for (ChessPiece.PieceType promo : promotionPieces()){
-                            moves.add(new ChessMove(position, twoForward, promo));
-                        }
-                    }else{
-                        moves.add(new ChessMove(position, twoForward, null));
-                    }
+                    denestingHelper(twoForward, position, moves, color);
                 }
             }
         }
@@ -61,18 +55,21 @@ public class PawnMovesCalculator extends PMCalculator{
             if (inBounds(diag)) {
                 ChessPiece target = board.getPiece(diag);
                 if ((target != null && target.getTeamColor() != color)) {
-                    if (isPromotionRow(diag.getRow(), color)){
-                        for (ChessPiece.PieceType promo : promotionPieces()){
-                            moves.add(new ChessMove(position, diag, promo));
-                        }
-                    }else{
-                        moves.add(new ChessMove(position, diag, null));
-                    }
+                    denestingHelper(diag, position, moves, color);
                 }
             }
         }
-
         return moves;
+    }
+
+    private void denestingHelper(ChessPosition twoForward, ChessPosition position, Collection<ChessMove> moves, ChessGame.TeamColor color){
+        if (isPromotionRow(twoForward.getRow(), color)){
+            for (ChessPiece.PieceType promo : promotionPieces()){
+                moves.add(new ChessMove(position, twoForward, promo));
+            }
+        }else{
+            moves.add(new ChessMove(position, twoForward, null));
+        }
     }
 
     private boolean inBounds(ChessPosition pos){

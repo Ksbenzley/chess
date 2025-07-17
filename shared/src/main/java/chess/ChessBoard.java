@@ -61,19 +61,24 @@ public class ChessBoard {
                 for (int col = 1; col <= 8; col++){
                     switch (col){
                         case 1, 8:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE,
+                                    ChessPiece.PieceType.ROOK));
                             break;
                         case 2, 7:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE,
+                                    ChessPiece.PieceType.KNIGHT));
                             break;
                         case 3, 6:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE,
+                                    ChessPiece.PieceType.BISHOP));
                             break;
                         case 4:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE,
+                                    ChessPiece.PieceType.QUEEN));
                             break;
                         case 5:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE,
+                                    ChessPiece.PieceType.KING));
                             break;
                     }
                 }
@@ -81,19 +86,24 @@ public class ChessBoard {
                 for (int col = 1; col <= 8; col++){
                     switch (col){
                         case 1, 8:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK,
+                                    ChessPiece.PieceType.ROOK));
                             break;
                         case 2, 7:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK,
+                                    ChessPiece.PieceType.KNIGHT));
                             break;
                         case 3, 6:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK,
+                                    ChessPiece.PieceType.BISHOP));
                             break;
                         case 4:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK,
+                                    ChessPiece.PieceType.QUEEN));
                             break;
                         case 5:
-                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+                            addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.BLACK,
+                                    ChessPiece.PieceType.KING));
                             break;
                     }
                 }
