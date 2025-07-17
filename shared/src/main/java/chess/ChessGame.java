@@ -114,40 +114,9 @@ public class ChessGame {
         //PAWN has special cases to check: promotionType
         if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
             if(piece.getTeamColor() == TeamColor.WHITE && endPos.getRow() == 8){
-                ChessPiece.PieceType promotionType = move.getPromotionPiece();
-                if(promotionType == null || promotionType == ChessPiece.PieceType.PAWN ||
-                promotionType == ChessPiece.PieceType.KING){
-                    throw new InvalidMoveException();
-                }else{
-                    ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), promotionType);
-                    chessBoard.addPiece(endPos, newPiece);
-                    chessBoard.addPiece(startPos, null);
-                    //setTeamTurn(piece.getTeamColor());
-                    if(newPiece.getTeamColor() == TeamColor.WHITE){
-                        setTeamTurn(TeamColor.BLACK);
-                    }else if(newPiece.getTeamColor() == TeamColor.BLACK){
-                        setTeamTurn(TeamColor.WHITE);
-                    }else if(piece.getTeamColor() == null){
-                        setTeamTurn(TeamColor.WHITE);
-                    }
-                }
+                switchingTurns(piece, endPos, startPos, move);
             }else if(piece.getTeamColor() == TeamColor.BLACK && endPos.getRow() == 1){
-                ChessPiece.PieceType promotionType = move.getPromotionPiece();
-                if(promotionType == null || promotionType == ChessPiece.PieceType.PAWN ||
-                        promotionType == ChessPiece.PieceType.KING){
-                    throw new InvalidMoveException();
-                }else{
-                    ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), promotionType);
-                    chessBoard.addPiece(endPos, newPiece);
-                    chessBoard.addPiece(startPos, null);
-                    if(newPiece.getTeamColor() == TeamColor.WHITE){
-                        setTeamTurn(TeamColor.BLACK);
-                    }else if(newPiece.getTeamColor() == TeamColor.BLACK){
-                        setTeamTurn(TeamColor.WHITE);
-                    }else if(piece.getTeamColor() == null){
-                        setTeamTurn(TeamColor.WHITE);
-                    }
-                }
+                switchingTurns(piece, endPos, startPos, move);
             }else{
                 chessBoard.addPiece(endPos, piece);
                 chessBoard.addPiece(startPos, null);
@@ -172,6 +141,25 @@ public class ChessGame {
         }
     }
 
+    public void switchingTurns(ChessPiece piece, ChessPosition endPos, ChessPosition startPos, ChessMove move)
+            throws InvalidMoveException{
+        ChessPiece.PieceType promotionType = move.getPromotionPiece();
+        if(promotionType == null || promotionType == ChessPiece.PieceType.PAWN ||
+                promotionType == ChessPiece.PieceType.KING){
+            throw new InvalidMoveException();
+        }else{
+            ChessPiece newPiece = new ChessPiece(piece.getTeamColor(), promotionType);
+            chessBoard.addPiece(endPos, newPiece);
+            chessBoard.addPiece(startPos, null);
+            if(newPiece.getTeamColor() == TeamColor.WHITE){
+                setTeamTurn(TeamColor.BLACK);
+            }else if(newPiece.getTeamColor() == TeamColor.BLACK){
+                setTeamTurn(TeamColor.WHITE);
+            }else if(piece.getTeamColor() == null){
+                setTeamTurn(TeamColor.WHITE);
+            }
+        }
+    }
 
 
     /**
