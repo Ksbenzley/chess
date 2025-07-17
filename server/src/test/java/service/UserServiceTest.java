@@ -17,8 +17,8 @@ public class UserServiceTest {
     @Test
     //create a new user
     public void registerUserPass() throws BadRequestException, AlreadyTakenException{
-        UserService.registerUser("username", "password", "e@mail.com", user, auth);
-        assertTrue(user.checkForUser("username"));
+        UserService.registerUser("player", "password", "e@mail.com", user, auth);
+        assertTrue(user.checkForUser("player"));
     }
 
     @Test
