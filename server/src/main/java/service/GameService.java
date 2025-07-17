@@ -9,7 +9,7 @@ public class GameService {
 
     public static void joinGame(String authToken, String playerColor, int gameID, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO, MemoryUserDAO memoryUserDAO){
         String userName = memoryAuthDAO.getUser(authToken);
-        if(playerColor == null){
+        if(playerColor == null || (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))){
             throw new BadRequestException("Error: bad request");
         }
         if(memoryAuthDAO.checkUserAuth(authToken)){

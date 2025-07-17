@@ -9,4 +9,5 @@ public interface GameDAO {
     public Boolean checkGameID(int gameID);
     public Boolean checkPlayerColor(String playerColor, int gameID);
     public void setPlayerColor(String playerColor, int gameID, String userName);
+    public void clear();
 }

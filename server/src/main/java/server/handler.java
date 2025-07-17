@@ -8,6 +8,7 @@ import spark.*;
 import java.util.List;
 
 public class handler{
+    //public UserDAO userDAO = new MemoryUserDAO();
     static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
     static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
     static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
@@ -98,7 +99,7 @@ public class handler{
     }
 
     public static Object clear(Request request, Response response){
-        DatabaseService.clear(memoryUserDAO, memoryAuthDAO);
+        DatabaseService.clear(memoryUserDAO, memoryAuthDAO, memoryGameDAO);
         response.status(200);
         return "{}";
     }

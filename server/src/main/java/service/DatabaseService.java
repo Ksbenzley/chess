@@ -4,16 +4,18 @@ import dataaccess.*;
 
 public class DatabaseService {
 
-    public static void clear(MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO){
+    public static void clear(MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO){
         //clear user data
         memoryUserDAO.clear();
-        //clear game data
+        //clear auth data
         memoryAuthDAO.clear();
+        //clear game data
+        memoryGameDAO.clear();
     }
 
     public static void logout(String authToken, MemoryAuthDAO memoryAuthDAO){
         if(checkAuthToken(authToken, memoryAuthDAO)){
-            memoryAuthDAO.logout(memoryAuthDAO.getUser(authToken));
+            memoryAuthDAO.logout(authToken);
             return;
         }
         throw new NotAuthorizedException("Error: unauthorized");

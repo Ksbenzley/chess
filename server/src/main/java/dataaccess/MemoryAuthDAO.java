@@ -18,7 +18,7 @@ public class MemoryAuthDAO implements AuthDAO{
 
     public String getUser(String authToken){
         for(AuthData data : authDB.values()){
-            if (authToken.equals(data.toString())){
+            if (authToken.equals(data.authToken())){
                 return data.username();
             }
         }
@@ -26,13 +26,22 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     public String loginUser(String username){
-        authDB.put(username, new AuthData(username, createAuthToken()));
-        return authDB.get(username).toString();
+        String token = createAuthToken();
+        //change this back to username if its fucked
+        authDB.put(token, new AuthData(username, token));
+        return token;
     }
+
+//    public String loginUser(String username){
+//        String token = createAuthToken();
+//        authDB.put(username, new AuthData(username, token));
+//        return authDB.get(username).toString();
+//    }
 
     public Boolean checkUserAuth(String authToken){
         for(AuthData data : authDB.values()){
-            if(data.toString().equals(authToken)){
+            if(data.authToken().equals(authToken)){
+                //if(data.toString().equals(authToken)){
                 return true;
             }
         }
