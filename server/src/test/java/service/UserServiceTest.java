@@ -18,6 +18,7 @@ public class UserServiceTest {
     //create a new user
     public void registerUserPass() throws BadRequestException, AlreadyTakenException{
         UserService.registerUser("username", "password", "e@mail.com", user, auth);
+        assertTrue(user.checkForUser("username"));
     }
 
     @Test
@@ -30,7 +31,9 @@ public class UserServiceTest {
 
     @Test
     public void loginUserPass() throws NotAuthorizedException, BadRequestException{
-        UserService.loginUser("username", "password", user, auth);
+        user.addUser("username", "password", "email@mail.com");
+        String authToken = UserService.loginUser("username", "password", user, auth);
+        assertNotNull(authToken);
     }
 
     @Test
