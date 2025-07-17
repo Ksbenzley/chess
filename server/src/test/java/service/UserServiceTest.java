@@ -1,8 +1,7 @@
 package service;
-
 import dataaccess.*;
 import org.junit.jupiter.api.*;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
 
@@ -17,7 +16,49 @@ public class UserServiceTest {
 
     @Test
     //create a new user
-    public void registerTest() throws DataAccessException, BadRequestException, AlreadyTakenException{
+    public void registerUserPass() throws BadRequestException, AlreadyTakenException{
         UserService.registerUser("username", "password", "e@mail.com", user, auth);
     }
+
+    @Test
+    public void registerUserFail() throws BadRequestException, AlreadyTakenException{
+        assertThrows(AlreadyTakenException.class, () ->{
+            UserService.registerUser("username", "password", "e@mail.com", user, auth);
+            UserService.registerUser("username", "password", "e@mail.com", user, auth);
+        });
+    }
+
+    @Test
+    public void loginUserPass() throws NotAuthorizedException, BadRequestException{
+        UserService.loginUser("username", "password", user, auth);
+    }
+
+    @Test
+    public void loginUserFail() throws NotAuthorizedException, BadRequestException{
+        assertThrows(BadRequestException.class, ()->{
+            UserService.loginUser(null, "password", user, auth);
+        });
+    }
+
+    @Test
+    public void checkUserPass() {
+        user.addUser("existingUser", "password", "email@mail.com");
+        boolean result = UserService.checkUser("existingUser", user);
+        assertTrue(result);
+    }
+
+    @Test
+    public void checkUserFail() {
+        boolean result = UserService.checkUser("nonexistentUser", user);
+        assertFalse(result);
+    }
+
+
+
+
+
+
+
 }
+
+
