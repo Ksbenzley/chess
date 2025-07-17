@@ -27,16 +27,9 @@ public class MemoryAuthDAO implements AuthDAO{
 
     public String loginUser(String username){
         String token = createAuthToken();
-        //change this back to username if its fucked
         authDB.put(token, new AuthData(username, token));
         return token;
     }
-
-//    public String loginUser(String username){
-//        String token = createAuthToken();
-//        authDB.put(username, new AuthData(username, token));
-//        return authDB.get(username).toString();
-//    }
 
     public Boolean checkUserAuth(String authToken){
         for(AuthData data : authDB.values()){
