@@ -1,7 +1,7 @@
 package service;
 import dataaccess.*;
 
-public class userService {
+public class UserService {
 
 
     public static String registerUser(String user, String pass, String email, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO){

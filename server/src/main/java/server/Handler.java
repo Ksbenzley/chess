@@ -7,7 +7,7 @@ import spark.*;
 
 import java.util.List;
 
-public class handler{
+public class Handler {
     //public UserDAO userDAO = new MemoryUserDAO();
     static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
     static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
@@ -21,7 +21,7 @@ public class handler{
         var data = serializer.fromJson(body, JoinGameRequest.class);
 
         try{
-            GameService.joinGame(authToken, data.playerColor, data.gameID, memoryAuthDAO, memoryGameDAO, memoryUserDAO);
+            GameService.joinGame(authToken, data.playerColor, data.gameID, memoryAuthDAO, memoryGameDAO);
             response.status(200);
             return "{}";
         }catch(BadRequestException x){
@@ -43,7 +43,7 @@ public class handler{
             String body = request.headers("authorization");
 
             List<GameData> games = GameService.listGames(body, memoryAuthDAO, memoryGameDAO);
-            listGamesResponse result = new listGamesResponse(games);
+            ListGamesResponse result = new ListGamesResponse(games);
 
             response.status(200);
             return serializer.toJson(result);
@@ -66,7 +66,7 @@ public class handler{
             int gameID = GameService.createGame(authToken, data.gameName, memoryAuthDAO, memoryGameDAO);
 
             response.status(200);
-            createGameResponse result = new createGameResponse(gameID);
+            CreateGameResponse result = new CreateGameResponse(gameID);
             return serializer.toJson(result);
         }catch(NotAuthorizedException x){
             response.status(401);
@@ -109,7 +109,7 @@ public class handler{
         var serializer = new Gson();
         var data = serializer.fromJson(request.body(), LoginRequest.class);
         try{
-            String authToken = userService.loginUser(data.username, data.password, memoryUserDAO, memoryAuthDAO);
+            String authToken = UserService.loginUser(data.username, data.password, memoryUserDAO, memoryAuthDAO);
 
             response.status(200);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
@@ -132,11 +132,10 @@ public class handler{
             var data = serializer.fromJson(body, RegisterRequest.class);
 
             //gets the authToken and registers the user
-            String authToken = userService.registerUser(data.username, data.password, data.email, memoryUserDAO, memoryAuthDAO);
+            String authToken = UserService.registerUser(data.username, data.password, data.email, memoryUserDAO, memoryAuthDAO);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
 
             response.status(200);
-            //response.type("application/JSON");
             return serializer.toJson(result);
         }catch (AlreadyTakenException x){
             response.status(403);
@@ -162,15 +161,12 @@ public class handler{
         String email;
     }
 
-    private static class listGamesResponse {
+    private static class ListGamesResponse {
         private List<GameData> games;
 
-        public listGamesResponse(List<GameData> games){
+        public ListGamesResponse(List<GameData> games){
             this.games = games;
         }
-//        public List<GameData> getGames(){
-//            return games;
-//        }
     }
 
     private static class RegisterResponse {
@@ -183,10 +179,10 @@ public class handler{
         }
     }
 
-    private static class createGameResponse {
+    private static class CreateGameResponse {
         int gameID;
 
-        createGameResponse(int gameID){
+        CreateGameResponse(int gameID){
             this.gameID = gameID;
         }
     }
@@ -203,5 +199,4 @@ public class handler{
             this.message = message;
         }
     }
-
 }

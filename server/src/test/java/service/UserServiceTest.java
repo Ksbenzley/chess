@@ -1,5 +1,4 @@
 package service;
-import static org.junit.jupiter.api.Assertions.*;
 
 import dataaccess.*;
 import org.junit.jupiter.api.*;
@@ -19,6 +18,6 @@ public class UserServiceTest {
     @Test
     //create a new user
     public void registerTest() throws DataAccessException, BadRequestException, AlreadyTakenException{
-        userService.registerUser("username", "password", "e@mail.com", user, auth);
+        UserService.registerUser("username", "password", "e@mail.com", user, auth);
     }
 }
