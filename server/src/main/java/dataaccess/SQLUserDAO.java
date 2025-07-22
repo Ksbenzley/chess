@@ -63,7 +63,7 @@ public class SQLUserDAO implements UserDAO{
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
             prepState.setString(1, username);
-            prepState.setString(2, password);
+            prepState.setString(2, hashedPassword);
             prepState.setString(3, email);
 
             prepState.executeUpdate();
@@ -76,10 +76,11 @@ public class SQLUserDAO implements UserDAO{
     @Override
     public Boolean checkPass(String username, String password) throws DataAccessException{
         String sql = "SELECT password FROM userData WHERE username = ? AND password = ?;";
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
             prepState.setString(1, username);
-            prepState.setString(2, password);
+            prepState.setString(2, hashedPassword);
 
             try(var rs = prepState.executeQuery()){
                 return rs.next();
