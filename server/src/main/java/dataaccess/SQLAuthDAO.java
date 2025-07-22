@@ -2,22 +2,11 @@ package dataaccess;
 
 //import model.AuthData;
 
+
 import java.sql.SQLException;
 import java.util.UUID;
 
 public class SQLAuthDAO implements AuthDAO{
-    public SQLAuthDAO() throws SQLException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()){
-            for(var statement: createStatements){
-                try(var preparedStatement = conn.prepareStatement(statement)){
-                    preparedStatement.executeUpdate();
-                }
-            }
-        }catch (SQLException x){
-            throw new SQLException("Error: creating tables");
-        }
-    }
 
     private final String[] createStatements = {
             """
@@ -27,6 +16,10 @@ public class SQLAuthDAO implements AuthDAO{
             )
             """
     };
+
+    public SQLAuthDAO() throws SQLException, DataAccessException {
+        DatabaseManager.constructor(createStatements);
+    }
 
     @Override
     public void clear() throws DataAccessException {

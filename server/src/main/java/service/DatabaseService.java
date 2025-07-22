@@ -4,13 +4,13 @@ import dataaccess.*;
 
 public class DatabaseService {
 
-    public static void clear(UserDAO UserDAO, AuthDAO AuthDAO, GameDAO GameDAO) throws DataAccessException{
+    public static void clear(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) throws DataAccessException{
         //clear user data
-        UserDAO.clear();
+        userDAO.clear();
         //clear auth data
-        AuthDAO.clear();
+        authDAO.clear();
         //clear game data
-        GameDAO.clear();
+        gameDAO.clear();
     }
 
     public static void logout(String authToken, AuthDAO memoryAuthDAO) throws DataAccessException, NotAuthorizedException{

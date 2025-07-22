@@ -16,6 +16,19 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    static public void constructor(String[] createStatements) throws DataAccessException, SQLException{
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()){
+            for(var statement: createStatements){
+                try(var preparedStatement = conn.prepareStatement(statement)){
+                    preparedStatement.executeUpdate();
+                }
+            }
+        }catch (SQLException x){
+            throw new SQLException("Error: creating tables");
+        }
+    }
+
     /**
      * Creates the database if it does not already exist.
      */

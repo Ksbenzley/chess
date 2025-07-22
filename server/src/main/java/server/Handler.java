@@ -9,21 +9,21 @@ import java.util.List;
 
 public class Handler {
 
-    private static UserDAO UserDAO;
-    private static GameDAO GameDAO;
-    private static AuthDAO AuthDAO;
+    private static UserDAO userDAO;
+    private static GameDAO gameDAO;
+    private static AuthDAO authDAO;
     private static Boolean created = false;
 
     private static void createDB(){
         if(!created){
             try{
-                UserDAO = new SQLUserDAO();
-                GameDAO = new SQLGameDAO();
-                AuthDAO = new SQLAuthDAO();
+                userDAO = new SQLUserDAO();
+                gameDAO = new SQLGameDAO();
+                authDAO = new SQLAuthDAO();
             }catch(Exception x){
-//                GameDAO = new MemoryGameDAO();
-//                UserDAO = new MemoryUserDAO();
-//                AuthDAO = new MemoryAuthDAO();
+                gameDAO = new MemoryGameDAO();
+                userDAO = new MemoryUserDAO();
+                authDAO = new MemoryAuthDAO();
             }
             created = true;
         }
@@ -38,7 +38,7 @@ public class Handler {
         var data = serializer.fromJson(body, JoinGameRequest.class);
 
         try{
-            GameService.joinGame(authToken, data.playerColor, data.gameID, AuthDAO, GameDAO);
+            GameService.joinGame(authToken, data.playerColor, data.gameID, authDAO, gameDAO);
             response.status(200);
             return "{}";
         }catch(BadRequestException x){
@@ -63,7 +63,7 @@ public class Handler {
         try{
             String body = request.headers("authorization");
 
-            List<GameData> games = GameService.listGames(body, AuthDAO, GameDAO);
+            List<GameData> games = GameService.listGames(body, authDAO, gameDAO);
             ListGamesResponse result = new ListGamesResponse(games);
 
             response.status(200);
@@ -88,7 +88,7 @@ public class Handler {
             String body = request.body();
             var data = serializer.fromJson(body, CreateGameRequest.class);
 
-            int gameID = GameService.createGame(authToken, data.gameName, AuthDAO, GameDAO);
+            int gameID = GameService.createGame(authToken, data.gameName, authDAO, gameDAO);
 
             response.status(200);
             CreateGameResponse result = new CreateGameResponse(gameID);
@@ -115,7 +115,7 @@ public class Handler {
             return serializer.toJson(new ErrorResponse("Error: bad request"));
         }
         try{
-            DatabaseService.logout(authToken, AuthDAO);
+            DatabaseService.logout(authToken, authDAO);
             response.status(200);
             return "{}";
         }catch(NotAuthorizedException x){
@@ -134,7 +134,7 @@ public class Handler {
         createDB();
         var serializer = new Gson();
         try {
-            DatabaseService.clear(UserDAO, AuthDAO, GameDAO);
+            DatabaseService.clear(userDAO, authDAO, gameDAO);
             response.status(200);
             return "{}";
         }catch(DataAccessException x){
@@ -149,7 +149,7 @@ public class Handler {
         var serializer = new Gson();
         var data = serializer.fromJson(request.body(), LoginRequest.class);
         try{
-            String authToken = UserService.loginUser(data.username, data.password, UserDAO, AuthDAO);
+            String authToken = UserService.loginUser(data.username, data.password, userDAO, authDAO);
 
             response.status(200);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
@@ -176,7 +176,7 @@ public class Handler {
             var data = serializer.fromJson(body, RegisterRequest.class);
 
             //gets the authToken and registers the user
-            String authToken = UserService.registerUser(data.username, data.password, data.email, UserDAO, AuthDAO);
+            String authToken = UserService.registerUser(data.username, data.password, data.email, userDAO, authDAO);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
 
             response.status(200);

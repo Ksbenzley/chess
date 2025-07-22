@@ -8,19 +8,6 @@ import java.util.Random;
 
 public class SQLGameDAO implements GameDAO{
 
-    public SQLGameDAO() throws SQLException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()){
-            for(var statement: createStatements){
-                try(var preparedStatement = conn.prepareStatement(statement)){
-                    preparedStatement.executeUpdate();
-                }
-            }
-        }catch (SQLException x){
-            throw new SQLException("Error: creating tables");
-        }
-    }
-
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS gameData (
@@ -31,6 +18,10 @@ public class SQLGameDAO implements GameDAO{
             )
             """
     };
+
+    public SQLGameDAO() throws SQLException, DataAccessException {
+        DatabaseManager.constructor(createStatements);
+    }
 
     @Override
     public ArrayList<GameData> getList() throws DataAccessException{
