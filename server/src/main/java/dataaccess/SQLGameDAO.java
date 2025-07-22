@@ -17,7 +17,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         }catch (SQLException x){
-            throw new SQLException("Error creating tables");
+            throw new SQLException("Error: creating tables");
         }
     }
 
@@ -75,7 +75,7 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public Boolean checkGameID(int gameID) throws DataAccessException {
-        String sql = "SELECT gameID FROM gameData WHERE gameID = ? LIMIT 1";
+        String sql = "SELECT id FROM gameData WHERE id = ? LIMIT 1";
 
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
@@ -86,26 +86,28 @@ public class SQLGameDAO implements GameDAO{
                 return rs.next();
             }
         }catch (SQLException x){
-            throw new DataAccessException("Error: game ID does not exist");
+            throw new DataAccessException("Error: game ID does not exist", x);
         }
     }
 
     @Override
     public Boolean checkPlayerColor(String playerColor, int gameID) throws DataAccessException{
-        String sql = "SELECT whiteUsername, blackUsername FROM gameData";
+        String sql = "SELECT whiteUsername, blackUsername FROM gameData WHERE id = ?;";
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
+
+            prepState.setInt(1, gameID);
 
             var rs = prepState.executeQuery();
 
             if(playerColor.equals("WHITE")){
-                if(rs.getString("whiteUsername") == null){
+                if(rs.next() && rs.getString("whiteUsername") == null){
                     return true;
                 }else{
                     return false;
                 }
             }else if(playerColor.equals("BLACK")){
-                if(rs.getString("blackUsername") == null){
+                if(rs.next() && rs.getString("blackUsername") == null){
                     return true;
                 }else{
                     return false;
@@ -113,13 +115,19 @@ public class SQLGameDAO implements GameDAO{
             }
             return false;
         }catch (SQLException x){
-            throw new DataAccessException("Error: could not check player color");
+            throw new DataAccessException("Error: could not check player color", x);
         }
     }
 
     @Override
     public void setPlayerColor(String playerColor, int gameID, String userName) throws DataAccessException{
-        String sql = "UPDATE gameData SET whiteUsername = '?' WHERE id = ?";
+        String column;
+        if(playerColor.equals("WHITE")){
+            column = "whiteUsername";
+        }else{
+            column = "blackUsername";
+        }
+        String sql = "UPDATE gameData SET " + column + " = ? WHERE id = ?;";
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
 
@@ -128,7 +136,7 @@ public class SQLGameDAO implements GameDAO{
 
             prepState.executeUpdate();
         }catch (SQLException x){
-            throw new DataAccessException("Error: could not set player color");
+            throw new DataAccessException("Error: could not set player color", x);
         }
     }
 

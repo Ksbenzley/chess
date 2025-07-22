@@ -15,7 +15,7 @@ public class SQLAuthDAO implements AuthDAO{
                 }
             }
         }catch (SQLException x){
-            throw new SQLException("Error creating tables");
+            throw new SQLException("Error: creating tables");
         }
     }
 
@@ -43,7 +43,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void logout(String authToken) throws DataAccessException{
+    public void logout(String authToken) throws DataAccessException, NotAuthorizedException{
         String sql = "DELETE FROM authData WHERE authToken = ?;";
         try(var comm = DatabaseManager.getConnection();
             var prepState = comm.prepareStatement(sql)){
@@ -60,7 +60,7 @@ public class SQLAuthDAO implements AuthDAO{
 
     @Override
     public String getUser(String authToken) throws DataAccessException{
-        String username;
+        String username = "";
         String sql = "SELECT username FROM authData WHERE authToken = ? LIMIT 1;";
         try(var comm = DatabaseManager.getConnection();
             var prepState = comm.prepareStatement(sql)){
@@ -68,10 +68,13 @@ public class SQLAuthDAO implements AuthDAO{
             prepState.setString(1, authToken);
 
             try(var rs = prepState.executeQuery()){
-                username = rs.getString("username");
+                if(rs.next()){
+                    username = rs.getString("username");
+                }
+                //username = rs.getString("username");
             }
         }catch(SQLException x){
-            throw new DataAccessException("Error: could not retrieve user");
+            throw new DataAccessException("Error: could not retrieve user", x);
         }
         return username;
     }

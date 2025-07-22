@@ -50,6 +50,9 @@ public class Handler {
         }catch(NotAuthorizedException x){
             response.status(401);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
@@ -68,6 +71,9 @@ public class Handler {
 
         }catch(NotAuthorizedException x){
             response.status(401);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
@@ -93,10 +99,13 @@ public class Handler {
         }catch(BadRequestException x){
             response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
-    public static Object logout(Request request, Response response) throws DataAccessException{
+    public static Object logout(Request request, Response response) throws DataAccessException, NotAuthorizedException{
         createDB();
         response.type("application/json");
         var serializer = new Gson();
@@ -115,14 +124,23 @@ public class Handler {
         }catch(BadRequestException x){
             response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
     public static Object clear(Request request, Response response) throws DataAccessException{
         createDB();
-        DatabaseService.clear(UserDAO, AuthDAO, GameDAO);
-        response.status(200);
-        return "{}";
+        var serializer = new Gson();
+        try {
+            DatabaseService.clear(UserDAO, AuthDAO, GameDAO);
+            response.status(200);
+            return "{}";
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }
     }
 
     public static Object login(Request request, Response response) throws DataAccessException{
@@ -141,6 +159,9 @@ public class Handler {
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }catch(NotAuthorizedException x){
             response.status(401);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
@@ -165,6 +186,9 @@ public class Handler {
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }catch (BadRequestException x){
             response.status(400);
+            return serializer.toJson(new ErrorResponse(x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }

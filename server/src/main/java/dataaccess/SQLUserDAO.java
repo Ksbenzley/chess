@@ -13,7 +13,7 @@ public class SQLUserDAO implements UserDAO{
                 }
             }
         }catch (SQLException x){
-            throw new SQLException("Error creating tables");
+            throw new SQLException("Error: creating tables");
         }
     }
 

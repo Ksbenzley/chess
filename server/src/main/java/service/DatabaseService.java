@@ -13,7 +13,7 @@ public class DatabaseService {
         GameDAO.clear();
     }
 
-    public static void logout(String authToken, AuthDAO memoryAuthDAO) throws DataAccessException{
+    public static void logout(String authToken, AuthDAO memoryAuthDAO) throws DataAccessException, NotAuthorizedException{
         if(checkAuthToken(authToken, memoryAuthDAO)){
             memoryAuthDAO.logout(authToken);
             return;
