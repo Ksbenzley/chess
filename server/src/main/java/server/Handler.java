@@ -8,6 +8,7 @@ import spark.*;
 import java.util.List;
 
 public class Handler {
+    //push message
 
     private static UserDAO UserDAO;
     private static GameDAO GameDAO;
