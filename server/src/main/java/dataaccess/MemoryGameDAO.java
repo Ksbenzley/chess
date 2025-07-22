@@ -40,8 +40,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     public Integer createGameID(){
-        int gameID = 1000 + new Random().nextInt(9000);
-        return gameID;
+        return 1000 + new Random().nextInt(9000);
     }
 
     public ArrayList<GameData> getList(){

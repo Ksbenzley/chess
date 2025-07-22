@@ -34,7 +34,6 @@ public class MemoryAuthDAO implements AuthDAO{
     public Boolean checkUserAuth(String authToken){
         for(AuthData data : authDB.values()){
             if(data.authToken().equals(authToken)){
-                //if(data.toString().equals(authToken)){
                 return true;
             }
         }

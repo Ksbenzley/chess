@@ -7,7 +7,8 @@ import java.util.ArrayList;
 
 public class GameService {
 
-    public static void joinGame(String authToken, String playerColor, int gameID, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO){
+    public static void joinGame(String authToken, String playerColor, int gameID, AuthDAO memoryAuthDAO, GameDAO memoryGameDAO)
+    throws DataAccessException{
         String userName = memoryAuthDAO.getUser(authToken);
         if(playerColor == null || (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))){
             throw new BadRequestException("Error: bad request");
@@ -27,7 +28,7 @@ public class GameService {
         }
     }
 
-    public static Integer createGame(String authToken, String gameName, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO){
+    public static Integer createGame(String authToken, String gameName, AuthDAO memoryAuthDAO, GameDAO memoryGameDAO) throws DataAccessException{
         if(gameName == null){
             throw new BadRequestException("Error: bad request");
         }
@@ -42,7 +43,7 @@ public class GameService {
         }
     }
 
-    public static ArrayList<GameData> listGames(String authToken, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO){
+    public static ArrayList<GameData> listGames(String authToken, AuthDAO memoryAuthDAO, GameDAO memoryGameDAO) throws DataAccessException{
         if(memoryAuthDAO.checkUserAuth(authToken)){
             return memoryGameDAO.getList();
         }else{

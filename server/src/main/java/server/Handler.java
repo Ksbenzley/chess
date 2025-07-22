@@ -8,12 +8,24 @@ import spark.*;
 import java.util.List;
 
 public class Handler {
-    //public UserDAO userDAO = new MemoryUserDAO();
-    static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-    static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-    static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
 
-    public static Object joinGame(Request request, Response response){
+    private static UserDAO UserDAO;
+    private static GameDAO GameDAO;
+    private static AuthDAO AuthDAO;
+
+    public Handler(){
+        try{
+            //UserDAO = new SQLUserDAO();
+            GameDAO = new SQLGameDAO();
+            //AuthDAO = new SQLAuthDAO();
+        }catch(Exception x){
+            GameDAO = new MemoryGameDAO();
+            UserDAO = new MemoryUserDAO();
+            AuthDAO = new MemoryAuthDAO();
+        }
+    }
+
+    public static Object joinGame(Request request, Response response) throws DataAccessException{
         response.type("application/json");
         var serializer = new Gson();
         String authToken = request.headers("authorization");
@@ -21,7 +33,7 @@ public class Handler {
         var data = serializer.fromJson(body, JoinGameRequest.class);
 
         try{
-            GameService.joinGame(authToken, data.playerColor, data.gameID, memoryAuthDAO, memoryGameDAO);
+            GameService.joinGame(authToken, data.playerColor, data.gameID, AuthDAO, GameDAO);
             response.status(200);
             return "{}";
         }catch(BadRequestException x){
@@ -36,13 +48,13 @@ public class Handler {
         }
     }
 
-    public static Object listGames(Request request, Response response){
+    public static Object listGames(Request request, Response response) throws DataAccessException{
         response.type("application/json");
         var serializer = new Gson();
         try{
             String body = request.headers("authorization");
 
-            List<GameData> games = GameService.listGames(body, memoryAuthDAO, memoryGameDAO);
+            List<GameData> games = GameService.listGames(body, AuthDAO, GameDAO);
             ListGamesResponse result = new ListGamesResponse(games);
 
             response.status(200);
@@ -54,7 +66,7 @@ public class Handler {
         }
     }
 
-    public static Object createGame(Request request, Response response){
+    public static Object createGame(Request request, Response response) throws DataAccessException{
         response.type("application/json");
         var serializer = new Gson();
 
@@ -63,7 +75,7 @@ public class Handler {
             String body = request.body();
             var data = serializer.fromJson(body, CreateGameRequest.class);
 
-            int gameID = GameService.createGame(authToken, data.gameName, memoryAuthDAO, memoryGameDAO);
+            int gameID = GameService.createGame(authToken, data.gameName, AuthDAO, GameDAO);
 
             response.status(200);
             CreateGameResponse result = new CreateGameResponse(gameID);
@@ -77,7 +89,7 @@ public class Handler {
         }
     }
 
-    public static Object logout(Request request, Response response){
+    public static Object logout(Request request, Response response) throws DataAccessException{
         response.type("application/json");
         var serializer = new Gson();
         String authToken = request.headers("authorization");
@@ -86,7 +98,7 @@ public class Handler {
             return serializer.toJson(new ErrorResponse("Error: bad request"));
         }
         try{
-            DatabaseService.logout(authToken, memoryAuthDAO);
+            DatabaseService.logout(authToken, AuthDAO);
             response.status(200);
             return "{}";
         }catch(NotAuthorizedException x){
@@ -98,18 +110,18 @@ public class Handler {
         }
     }
 
-    public static Object clear(Request request, Response response){
-        DatabaseService.clear(memoryUserDAO, memoryAuthDAO, memoryGameDAO);
+    public static Object clear(Request request, Response response) throws DataAccessException{
+        DatabaseService.clear(UserDAO, AuthDAO, GameDAO);
         response.status(200);
         return "{}";
     }
 
-    public static Object login(Request request, Response response){
+    public static Object login(Request request, Response response) throws DataAccessException{
         response.type("application/json");
         var serializer = new Gson();
         var data = serializer.fromJson(request.body(), LoginRequest.class);
         try{
-            String authToken = UserService.loginUser(data.username, data.password, memoryUserDAO, memoryAuthDAO);
+            String authToken = UserService.loginUser(data.username, data.password, UserDAO, AuthDAO);
 
             response.status(200);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
@@ -123,7 +135,7 @@ public class Handler {
         }
     }
 
-    public static Object register(Request request, Response response) {
+    public static Object register(Request request, Response response) throws DataAccessException{
         response.type("application/json");
         var serializer = new Gson();
 
@@ -132,7 +144,7 @@ public class Handler {
             var data = serializer.fromJson(body, RegisterRequest.class);
 
             //gets the authToken and registers the user
-            String authToken = UserService.registerUser(data.username, data.password, data.email, memoryUserDAO, memoryAuthDAO);
+            String authToken = UserService.registerUser(data.username, data.password, data.email, UserDAO, AuthDAO);
             RegisterResponse result = new RegisterResponse(data.username, authToken);
 
             response.status(200);
