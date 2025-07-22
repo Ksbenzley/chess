@@ -43,13 +43,16 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void logout(String username) throws DataAccessException{
-        String sql = "DELETE FROM authData WHERE username = ?;";
+    public void logout(String authToken) throws DataAccessException{
+        String sql = "DELETE FROM authData WHERE authToken = ?;";
         try(var comm = DatabaseManager.getConnection();
             var prepState = comm.prepareStatement(sql)){
-            prepState.setString(1, username);
+            prepState.setString(1, authToken);
 
-            prepState.executeUpdate();
+            int rowsAffected = prepState.executeUpdate();
+            if(rowsAffected == 0){
+                throw new NotAuthorizedException("Error: unauthorized");
+            }
         }catch(SQLException x){
             throw new DataAccessException("Error: could not logout");
         }
@@ -81,7 +84,7 @@ public class SQLAuthDAO implements AuthDAO{
     @Override
     public String loginUser(String username) throws DataAccessException{
         String token = createAuthToken();
-        String sql = "INSERT INTO authData (username, authToken) VALUES ('?', '?');";
+        String sql = "INSERT INTO authData (username, authToken) VALUES (?, ?);";
         try(var comm = DatabaseManager.getConnection();
             var prepState = comm.prepareStatement(sql)){
             prepState.setString(1, username);

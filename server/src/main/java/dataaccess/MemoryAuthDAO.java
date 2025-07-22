@@ -12,8 +12,8 @@ public class MemoryAuthDAO implements AuthDAO{
         authDB.clear();
     }
 
-    public void logout(String username){
-        authDB.remove(username);
+    public void logout(String authToken){
+        authDB.remove(authToken);
     }
 
     public String getUser(String authToken){

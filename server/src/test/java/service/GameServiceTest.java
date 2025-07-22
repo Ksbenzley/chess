@@ -18,7 +18,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void joinGamePass() throws BadRequestException, NotAuthorizedException, AlreadyTakenException{
+    public void joinGamePass() throws BadRequestException, NotAuthorizedException, AlreadyTakenException, DataAccessException{
         String user = "player1";
         String authToken = auth.loginUser(user);
         int gameID = game.createGameID();
@@ -40,7 +40,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void createGamePass() throws BadRequestException, NotAuthorizedException{
+    public void createGamePass() throws BadRequestException, NotAuthorizedException, DataAccessException{
         String user = "player";
         String authToken = auth.loginUser(user);
         GameService.createGame(authToken, "gameName", auth, game);
@@ -56,7 +56,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void listGamesPass() throws NotAuthorizedException{
+    public void listGamesPass() throws NotAuthorizedException, DataAccessException{
         String user = "user";
         String authToken = auth.loginUser(user);
         GameService.listGames(authToken, auth, game);

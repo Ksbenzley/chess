@@ -75,15 +75,18 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public Boolean checkPass(String username, String password) throws DataAccessException{
-        String sql = "SELECT password FROM userData WHERE username = ? AND password = ?;";
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        String sql = "SELECT password FROM userData WHERE username = ?;";
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
             prepState.setString(1, username);
-            prepState.setString(2, hashedPassword);
 
             try(var rs = prepState.executeQuery()){
-                return rs.next();
+                if(rs.next()){
+                    String hashedPassword = rs.getString("password");
+                    return BCrypt.checkpw(password, hashedPassword);
+                }else{
+                    return false;
+                }
             }
         }catch(SQLException x){
             throw new DataAccessException("Error: passwords don't match");

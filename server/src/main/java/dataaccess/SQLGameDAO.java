@@ -148,7 +148,7 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public Integer addGame(int gameID, String gameName) throws DataAccessException{
-        String sql = "INSERT INTO gameData (gameID, gameName) VALUES ('?', '?')";
+        String sql = "INSERT INTO gameData (id, gameName) VALUES (?, ?);";
         try(var comm = DatabaseManager.getConnection();
             var prepState = comm.prepareStatement(sql)){
 

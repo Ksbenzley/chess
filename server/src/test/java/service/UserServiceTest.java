@@ -1,6 +1,9 @@
 package service;
 import dataaccess.*;
 import org.junit.jupiter.api.*;
+
+import javax.xml.crypto.Data;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -15,7 +18,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void registerUserPass() throws BadRequestException, AlreadyTakenException{
+    public void registerUserPass() throws BadRequestException, AlreadyTakenException, DataAccessException{
         UserService.registerUser("player", "password", "e@mail.com", user, auth);
         assertTrue(user.checkForUser("player"));
     }
@@ -29,7 +32,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void loginUserPass() throws NotAuthorizedException, BadRequestException{
+    public void loginUserPass() throws NotAuthorizedException, BadRequestException, DataAccessException{
         user.addUser("username", "password", "email@mail.com");
         String authToken = UserService.loginUser("username", "password", user, auth);
         assertNotNull(authToken);
@@ -43,14 +46,14 @@ public class UserServiceTest {
     }
 
     @Test
-    public void checkUserPass() {
+    public void checkUserPass() throws DataAccessException {
         user.addUser("existingUser", "password", "email@mail.com");
         boolean result = UserService.checkUser("existingUser", user);
         assertTrue(result);
     }
 
     @Test
-    public void checkUserFail() {
+    public void checkUserFail() throws DataAccessException{
         boolean result = UserService.checkUser("nonexistentUser", user);
         assertFalse(result);
     }

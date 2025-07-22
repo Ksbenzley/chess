@@ -17,7 +17,7 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void clearPass(){
+    public void clearPass() throws DataAccessException{
         user.addUser("username", "password", "email");
         auth.loginUser("username");
         game.addGame(1982, "gameName");
@@ -25,7 +25,7 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void logoutPass() throws NotAuthorizedException{
+    public void logoutPass() throws NotAuthorizedException, DataAccessException{
         String user = "player";
         String authToken = auth.loginUser(user);
         DatabaseService.logout(authToken, auth);
@@ -40,14 +40,14 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void checkAuthTokenPass(){
+    public void checkAuthTokenPass() throws DataAccessException{
         String user = "player";
         String authToken = auth.loginUser(user);
         assertTrue(DatabaseService.checkAuthToken(authToken, auth));
     }
 
     @Test
-    public void checkAuthTokenFail(){
+    public void checkAuthTokenFail() throws DataAccessException{
         String authToken = "1b3a-3d9t-0o-5k1e-8n91";
         assertFalse(DatabaseService.checkAuthToken(authToken, auth));
     }

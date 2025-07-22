@@ -12,20 +12,25 @@ public class Handler {
     private static UserDAO UserDAO;
     private static GameDAO GameDAO;
     private static AuthDAO AuthDAO;
+    private static Boolean created = false;
 
-    public Handler(){
-        try{
-            //UserDAO = new SQLUserDAO();
-            GameDAO = new SQLGameDAO();
-            //AuthDAO = new SQLAuthDAO();
-        }catch(Exception x){
-            GameDAO = new MemoryGameDAO();
-            UserDAO = new MemoryUserDAO();
-            AuthDAO = new MemoryAuthDAO();
+    private static void createDB(){
+        if(!created){
+            try{
+                UserDAO = new SQLUserDAO();
+                GameDAO = new SQLGameDAO();
+                AuthDAO = new SQLAuthDAO();
+            }catch(Exception x){
+//                GameDAO = new MemoryGameDAO();
+//                UserDAO = new MemoryUserDAO();
+//                AuthDAO = new MemoryAuthDAO();
+            }
+            created = true;
         }
     }
 
     public static Object joinGame(Request request, Response response) throws DataAccessException{
+        createDB();
         response.type("application/json");
         var serializer = new Gson();
         String authToken = request.headers("authorization");
@@ -49,6 +54,7 @@ public class Handler {
     }
 
     public static Object listGames(Request request, Response response) throws DataAccessException{
+        createDB();
         response.type("application/json");
         var serializer = new Gson();
         try{
@@ -67,6 +73,7 @@ public class Handler {
     }
 
     public static Object createGame(Request request, Response response) throws DataAccessException{
+        createDB();
         response.type("application/json");
         var serializer = new Gson();
 
@@ -90,6 +97,7 @@ public class Handler {
     }
 
     public static Object logout(Request request, Response response) throws DataAccessException{
+        createDB();
         response.type("application/json");
         var serializer = new Gson();
         String authToken = request.headers("authorization");
@@ -111,12 +119,14 @@ public class Handler {
     }
 
     public static Object clear(Request request, Response response) throws DataAccessException{
+        createDB();
         DatabaseService.clear(UserDAO, AuthDAO, GameDAO);
         response.status(200);
         return "{}";
     }
 
     public static Object login(Request request, Response response) throws DataAccessException{
+        createDB();
         response.type("application/json");
         var serializer = new Gson();
         var data = serializer.fromJson(request.body(), LoginRequest.class);
@@ -136,6 +146,7 @@ public class Handler {
     }
 
     public static Object register(Request request, Response response) throws DataAccessException{
+        createDB();
         response.type("application/json");
         var serializer = new Gson();
 
