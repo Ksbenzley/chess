@@ -6,6 +6,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class SQLUserDAO implements UserDAO{
     public SQLUserDAO() throws SQLException, DataAccessException {
         DatabaseManager.createDatabase();
+        DatabaseManager.useFunction();
         try (var conn = DatabaseManager.getConnection()){
             for(var statement: createStatement){
                 try(var preparedStatement = conn.prepareStatement(statement)){

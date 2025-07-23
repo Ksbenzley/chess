@@ -16,8 +16,18 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    static public void useFunction() throws DataAccessException, SQLException{
+        try(var conn = DatabaseManager.getConnection()){
+            var useDatabase = "USE " + databaseName;
+            try(var usingDatabase = conn.prepareStatement(useDatabase)){
+                usingDatabase.executeUpdate();
+            }
+        }
+    }
+
     static public void constructor(String[] createStatements) throws DataAccessException, SQLException{
         DatabaseManager.createDatabase();
+        useFunction();
         try (var conn = DatabaseManager.getConnection()){
             for(var statement: createStatements){
                 try(var preparedStatement = conn.prepareStatement(statement)){
