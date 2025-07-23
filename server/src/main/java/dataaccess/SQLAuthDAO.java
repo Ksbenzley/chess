@@ -64,7 +64,6 @@ public class SQLAuthDAO implements AuthDAO{
                 if(rs.next()){
                     username = rs.getString("username");
                 }
-                //username = rs.getString("username");
             }
         }catch(SQLException x){
             throw new DataAccessException("Error: could not retrieve user", x);
