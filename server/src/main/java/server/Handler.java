@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import spark.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class Handler {
 
@@ -43,18 +44,17 @@ public class Handler {
             return "{}";
         }catch(BadRequestException x){
             response.status(400);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }catch(AlreadyTakenException x){
             response.status(403);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }catch(NotAuthorizedException x) {
             response.status(401);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }
-//        }catch(DataAccessException x){
-//            response.status(500);
-//            return serializer.toJson(new ErrorResponse(x.getMessage()));
-//        }
     }
 
     public static Object listGames(Request request, Response response) throws DataAccessException{
@@ -72,10 +72,10 @@ public class Handler {
 
         }catch(NotAuthorizedException x){
             response.status(401);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
-//        }catch(DataAccessException x){
-//            response.status(500);
-//            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }
     }
 
@@ -96,13 +96,13 @@ public class Handler {
             return serializer.toJson(result);
         }catch(NotAuthorizedException x){
             response.status(401);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }catch(BadRequestException x){
             response.status(400);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
-//        }catch(DataAccessException x){
-//            response.status(500);
-//            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }
     }
 
@@ -121,13 +121,13 @@ public class Handler {
             return "{}";
         }catch(NotAuthorizedException x){
             response.status(401);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }catch(BadRequestException x){
             response.status(400);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
-//        }catch(DataAccessException x){
-//            response.status(500);
-//            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }
     }
 
@@ -140,8 +140,7 @@ public class Handler {
             return "{}";
         }catch(DataAccessException x){
             response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }
+            return serializer.toJson(Map.of("message", x.getMessage()));        }
     }
 
     public static Object login(Request request, Response response) throws DataAccessException{
@@ -157,13 +156,13 @@ public class Handler {
             return serializer.toJson(result);
         }catch(BadRequestException x){
             response.status(400);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }catch(NotAuthorizedException x){
             response.status(401);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
-//        }catch(DataAccessException x){
-//            response.status(500);
-//            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }
     }
 
@@ -184,13 +183,13 @@ public class Handler {
             return serializer.toJson(result);
         }catch (AlreadyTakenException x){
             response.status(403);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }catch (BadRequestException x){
             response.status(400);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
-//        }catch(DataAccessException x){
-//            response.status(500);
-//            return serializer.toJson(new ErrorResponse(x.getMessage()));
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }catch(DataAccessException x){
+            response.status(500);
+            return serializer.toJson(Map.of("message", x.getMessage()));
         }
     }
 
