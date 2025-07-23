@@ -69,7 +69,7 @@ public class SQLUserDAO implements UserDAO{
             prepState.executeUpdate();
 
         }catch (SQLException x){
-            throw new DataAccessException("Error: could not add information");
+            throw new DataAccessException("Error: could not add information", x);
         }
     }
 
