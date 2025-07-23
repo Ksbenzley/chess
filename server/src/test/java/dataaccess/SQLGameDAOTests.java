@@ -20,7 +20,7 @@ public class SQLGameDAOTests {
         game.addGame(1969, "moonGame");
         game.addGame(2015, "MGSV");
         game.getList();
-        String sql = "SELECT * FROM gameDATA";
+        String sql = "SELECT * FROM gameData";
         try(var conn = DatabaseManager.getConnection();
             var prepState = conn.prepareStatement(sql)){
 
@@ -34,7 +34,7 @@ public class SQLGameDAOTests {
 
     @Test
     public void getListFail() throws DataAccessException{
-        String sql = "DROP TABLE IF EXISTS gameDATA;";
+        String sql = "DROP TABLE IF EXISTS gameData;";
         try (var conn = DatabaseManager.getConnection();
              var prepState = conn.prepareStatement(sql)) {
 
@@ -100,7 +100,7 @@ public class SQLGameDAOTests {
     public void setPlayerColorPass() throws DataAccessException{
         game.addGame(2001, "Space Odyssey");
         game.setPlayerColor("WHITE", 2001, "David Bowman");
-        String sql = "SELECT whiteUsername FROM gameDATA WHERE id = ?";
+        String sql = "SELECT whiteUsername FROM gameData WHERE id = ?";
         try (var conn = DatabaseManager.getConnection();
              var prepState = conn.prepareStatement(sql)) {
             prepState.setInt(1, 2001);
