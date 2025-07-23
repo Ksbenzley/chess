@@ -115,8 +115,10 @@ public class SQLGameDAO implements GameDAO{
         String column;
         if(playerColor.equals("WHITE")){
             column = "whiteUsername";
-        }else{
+        }else if (playerColor.equals("BLACK")){
             column = "blackUsername";
+        }else{
+            throw new DataAccessException("Error: invalid color");
         }
         String sql = "UPDATE gameData SET " + column + " = ? WHERE id = ?;";
         try(var conn = DatabaseManager.getConnection();
