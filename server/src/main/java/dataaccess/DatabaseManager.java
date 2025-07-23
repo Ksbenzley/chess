@@ -16,12 +16,14 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    static public void useFunction() throws DataAccessException, SQLException{
+    static public void useFunction() throws DataAccessException{
         try(var conn = DatabaseManager.getConnection()){
-            var useDatabase = "USE " + databaseName;
-            try(var usingDatabase = conn.prepareStatement(useDatabase)){
+            var use = "USE " + databaseName;
+            try(var usingDatabase = conn.prepareStatement(use)){
                 usingDatabase.executeUpdate();
             }
+        }catch(SQLException x){
+            throw new DataAccessException("Error: can't create database");
         }
     }
 
