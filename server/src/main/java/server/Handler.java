@@ -47,13 +47,14 @@ public class Handler {
         }catch(AlreadyTakenException x){
             response.status(403);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(NotAuthorizedException x){
+        }catch(NotAuthorizedException x) {
             response.status(401);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(DataAccessException x){
-            response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
+//        }catch(DataAccessException x){
+//            response.status(500);
+//            return serializer.toJson(new ErrorResponse(x.getMessage()));
+//        }
     }
 
     public static Object listGames(Request request, Response response) throws DataAccessException{
@@ -72,9 +73,9 @@ public class Handler {
         }catch(NotAuthorizedException x){
             response.status(401);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(DataAccessException x){
-            response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+//        }catch(DataAccessException x){
+//            response.status(500);
+//            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
@@ -99,9 +100,9 @@ public class Handler {
         }catch(BadRequestException x){
             response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(DataAccessException x){
-            response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+//        }catch(DataAccessException x){
+//            response.status(500);
+//            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
@@ -124,9 +125,9 @@ public class Handler {
         }catch(BadRequestException x){
             response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(DataAccessException x){
-            response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+//        }catch(DataAccessException x){
+//            response.status(500);
+//            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
@@ -160,9 +161,9 @@ public class Handler {
         }catch(NotAuthorizedException x){
             response.status(401);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(DataAccessException x){
-            response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+//        }catch(DataAccessException x){
+//            response.status(500);
+//            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
@@ -187,9 +188,9 @@ public class Handler {
         }catch (BadRequestException x){
             response.status(400);
             return serializer.toJson(new ErrorResponse(x.getMessage()));
-        }catch(DataAccessException x){
-            response.status(500);
-            return serializer.toJson(new ErrorResponse(x.getMessage()));
+//        }catch(DataAccessException x){
+//            response.status(500);
+//            return serializer.toJson(new ErrorResponse(x.getMessage()));
         }
     }
 
