@@ -140,7 +140,8 @@ public class Handler {
             return "{}";
         }catch(DataAccessException x){
             response.status(500);
-            return serializer.toJson(Map.of("message", x.getMessage()));        }
+            return serializer.toJson(Map.of("message", x.getMessage()));
+        }
     }
 
     public static Object login(Request request, Response response) throws DataAccessException{

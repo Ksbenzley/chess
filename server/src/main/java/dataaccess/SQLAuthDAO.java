@@ -84,7 +84,7 @@ public class SQLAuthDAO implements AuthDAO{
 
             prepState.executeUpdate();
         }catch(SQLException x){
-            throw new DataAccessException("Error: cannot login user");
+            throw new DataAccessException("Error: cannot login user " + x.getMessage());
         }
         return token;
     }
