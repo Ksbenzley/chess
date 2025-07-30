@@ -52,7 +52,6 @@ public class clientRequest {
             if (!gameList.containsKey(gameID)) {
                 throw new BadRequestException("Game number out of range.");
             }
-
 //            server.observeGame(gameID);
             System.out.println("Now observing: " + gameList.get(gameID).gameName());
             return "";
@@ -66,7 +65,6 @@ public class clientRequest {
             int gameNum;
             try {
                 gameNum = Integer.parseInt(params[0]);
-                gameNum = gameNum + 1;
             }catch (NumberFormatException e) {
                 throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
             }
@@ -98,8 +96,8 @@ public class clientRequest {
             System.out.println(i + ". " + game.gameName());
             System.out.println("    White Player: " + game.whiteUsername());
             System.out.println("    Black Player: " + game.blackUsername());
-            i++;
             gameList.put(i, game);
+            i++;
         }
         return "";
     }

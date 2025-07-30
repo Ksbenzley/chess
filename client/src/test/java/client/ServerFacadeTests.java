@@ -136,28 +136,42 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void listFail(){
+    public void playPass(){
         UserData user = new UserData("shinji", "pass", "email");
         client.register(user.username(), user.password(), user.email());
-    }
-
-    @Test
-    public void playPass(){
-
+        client.createGame("Nerv");
+        client.listGames();
+        assertEquals("", client.playGame("1", "WHITE"));
     }
 
     @Test
     public void playFail(){
-
+        UserData user = new UserData("shinji", "pass", "email");
+        client.register(user.username(), user.password(), user.email());
+        client.createGame("Nerv");
+        client.listGames();
+        assertThrows(BadRequestException.class, () ->{
+            client.playGame("gameName", "WHITE");
+        });
     }
 
     @Test
     public void observePass(){
-
+        UserData user = new UserData("shinji", "pass", "email");
+        client.register(user.username(), user.password(), user.email());
+        client.createGame("Nerv");
+        client.listGames();
+        assertEquals("", client.observeGame("1"));
     }
 
     @Test
     public void observeFail(){
-
+        UserData user = new UserData("shinji", "pass", "email");
+        client.register(user.username(), user.password(), user.email());
+        client.createGame("Nerv");
+        client.listGames();
+        assertThrows(NumberFormatException.class, () ->{
+            client.observeGame("gameName");
+        });
     }
 }
