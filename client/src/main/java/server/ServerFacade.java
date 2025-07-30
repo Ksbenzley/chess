@@ -1,3 +1,4 @@
+package server;
 
 import com.google.gson.JsonObject;
 import exceptions.*;
@@ -36,7 +37,7 @@ public class ServerFacade {
         return data;
     }
 
-    public String logout(String params) throws BadRequestException{
+    public String logout() throws BadRequestException{
         var path = "/session";
         return this.makeRequest("DELETE", path, null, null);
     }
@@ -57,7 +58,6 @@ public class ServerFacade {
 
     public ArrayList listGames() throws BadRequestException {
         var path = "/game";
-        //ArrayList response;
         ListGamesResponse response = this.makeRequest("GET", path, null, ListGamesResponse.class);
         return response.getGames();
     }
@@ -96,6 +96,10 @@ public class ServerFacade {
             }
         } catch (BadRequestException ex) {
             throw ex;
+        } catch (AlreadyTakenException ex) {
+            throw new AlreadyTakenException(ex.getMessage());
+        } catch (NotAuthorizedException ex) {
+            throw new NotAuthorizedException(ex.getMessage());
         } catch (Exception ex) {
             throw new BadRequestException(ex.getMessage());
         }
@@ -126,8 +130,18 @@ public class ServerFacade {
                 }
             }
             switch (status){
-                case 400 -> throw new BadRequestException(error);
-                case 401 -> throw new NotAuthorizedException(error);
+                case 400 -> {
+                    System.out.println("Error from server: [ " + error + " ]");
+                    if(error.toLowerCase().contains("username already taken")){
+                        throw new AlreadyTakenException(error);
+                    }else{
+                        throw new BadRequestException(error);
+                    }
+                }
+                case 401 -> {
+                    System.out.println("Error from server: [ " + error + " ]");
+                    throw new NotAuthorizedException(error);
+                }
                 case 403 -> throw new AlreadyTakenException(error);
                 default -> throw new BadRequestException(error);
             }

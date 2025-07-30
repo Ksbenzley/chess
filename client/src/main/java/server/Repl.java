@@ -1,6 +1,7 @@
+package server;
+
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
-import exceptions.DataAccessException;
 import exceptions.NotAuthorizedException;
 
 import java.util.Scanner;

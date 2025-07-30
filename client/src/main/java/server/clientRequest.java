@@ -1,5 +1,7 @@
+package server;
+
+import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
-import exceptions.DataAccessException;
 import model.GameData;
 import model.UserData;
 
@@ -14,6 +16,9 @@ public class clientRequest {
     private final HashMap<Integer, GameData> gameList = new HashMap<>();
     private State state = State.SIGNEDOUT;
 
+    public HashMap<Integer, GameData> getGameList(){
+        return gameList;
+    }
 
     public clientRequest(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -110,33 +115,33 @@ public class clientRequest {
         }
     }
 
-    public String logout(String... params) throws BadRequestException {
-        if (params.length >= 0) {
-            state = State.SIGNEDOUT;
-            server.logout(authToken);
-            authToken = null;
-            System.out.println("You have successfully signed out");
-            return "";
-        }else{
-            throw new BadRequestException("Expected: <GAME NUMBER>");
-        }
+    public String logout() throws BadRequestException {
+        state = State.SIGNEDOUT;
+        server.logout();
+        authToken = null;
+        System.out.println("You have successfully signed out");
+        return "";
     }
 
-    public String register(String... params) throws BadRequestException {
-        if (params.length >= 3){
+    public String register(String... params) throws AlreadyTakenException {
+        try {
+            if (params.length >= 3) {
 
-            String name = params[0];
-            String pass = params[1];
-            String email = params[2];
+                String name = params[0];
+                String pass = params[1];
+                String email = params[2];
 
-            server.register(new UserData(name, pass, email));
+                server.register(new UserData(name, pass, email));
 
-            state = State.SIGNEDIN;
-            authToken = server.login(new UserData(name, pass, null)).authToken();
-            loadGames();
-            return "You are signed in as " + name;
-        }else{
-            throw new BadRequestException("Expected: <GAME NUMBER>");
+                state = State.SIGNEDIN;
+                authToken = server.login(new UserData(name, pass, null)).authToken();
+                loadGames();
+                return "You are signed in as " + name;
+            } else {
+                throw new BadRequestException("Expected: bad input");
+            }
+        }catch (AlreadyTakenException e){
+            throw e;
         }
     }
 
