@@ -1,4 +1,4 @@
-package dataaccess;
+package exceptions;
 
 /**
  * Indicates a given username was unavailable
