@@ -1,7 +1,6 @@
 package dataaccess;
 
-import model.UserData;
-import org.eclipse.jetty.server.session.DatabaseAdaptor;
+import exceptions.DataAccessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.sql.SQLException;

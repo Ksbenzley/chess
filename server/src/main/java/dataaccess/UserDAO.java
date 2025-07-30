@@ -1,5 +1,5 @@
 package dataaccess;
-import org.mindrot.jbcrypt.BCrypt;
+import exceptions.DataAccessException;
 
 public interface UserDAO {
     public void clear() throws DataAccessException;

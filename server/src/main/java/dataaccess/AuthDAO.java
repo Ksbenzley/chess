@@ -1,5 +1,8 @@
 package dataaccess;
 
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
+
 public interface AuthDAO {
     public void clear() throws DataAccessException;
     public void logout(String username) throws DataAccessException, NotAuthorizedException;
