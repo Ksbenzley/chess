@@ -1,6 +1,10 @@
 package service;
 
 import dataaccess.*;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +22,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void joinGamePass() throws BadRequestException, NotAuthorizedException, AlreadyTakenException, DataAccessException{
+    public void joinGamePass() throws BadRequestException, NotAuthorizedException, AlreadyTakenException, DataAccessException {
         String user = "player1";
         String authToken = auth.loginUser(user);
         int gameID = game.createGameID();

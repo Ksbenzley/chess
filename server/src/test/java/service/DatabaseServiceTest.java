@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.*;
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +19,7 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void clearPass() throws DataAccessException{
+    public void clearPass() throws DataAccessException {
         user.addUser("username", "password", "email");
         auth.loginUser("username");
         game.addGame(1982, "gameName");

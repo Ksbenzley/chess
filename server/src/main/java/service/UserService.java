@@ -1,11 +1,15 @@
 package service;
 import dataaccess.*;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
 
 public class UserService {
 
 
     public static String registerUser(String user, String pass, String email, UserDAO memoryUserDAO, AuthDAO memoryAuthDAO)
-    throws DataAccessException{
+    throws DataAccessException {
         //checks if username is already taken -else- registers the user
         if (user == null || pass == null){
             throw new BadRequestException("Error: bad request");

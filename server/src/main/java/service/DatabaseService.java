@@ -1,10 +1,12 @@
 package service;
 
 import dataaccess.*;
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
 
 public class DatabaseService {
 
-    public static void clear(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) throws DataAccessException{
+    public static void clear(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) throws DataAccessException {
         //clear user data
         userDAO.clear();
         //clear auth data
@@ -13,7 +15,7 @@ public class DatabaseService {
         gameDAO.clear();
     }
 
-    public static void logout(String authToken, AuthDAO memoryAuthDAO) throws DataAccessException, NotAuthorizedException{
+    public static void logout(String authToken, AuthDAO memoryAuthDAO) throws DataAccessException, NotAuthorizedException {
         if(checkAuthToken(authToken, memoryAuthDAO)){
             memoryAuthDAO.logout(authToken);
             return;

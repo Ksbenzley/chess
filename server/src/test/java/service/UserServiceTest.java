@@ -1,8 +1,10 @@
 package service;
 import dataaccess.*;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
 import org.junit.jupiter.api.*;
-
-import javax.xml.crypto.Data;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +20,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void registerUserPass() throws BadRequestException, AlreadyTakenException, DataAccessException{
+    public void registerUserPass() throws BadRequestException, AlreadyTakenException, DataAccessException {
         UserService.registerUser("player", "password", "e@mail.com", user, auth);
         assertTrue(user.checkForUser("player"));
     }
