@@ -1,9 +1,14 @@
 package server;
 import dataaccess.*;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
+import exceptions.NotAuthorizedException;
 import model.*;
 import service.*;
 import com.google.gson.Gson;
 import spark.*;
+import requests.*;
 
 import java.util.List;
 import java.util.Map;
@@ -30,16 +35,16 @@ public class Handler {
         }
     }
 
-    public static Object joinGame(Request request, Response response) throws DataAccessException{
+    public static Object joinGame(Request request, Response response) throws DataAccessException {
         createDB();
         response.type("application/json");
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         String body = request.body();
-        var data = serializer.fromJson(body, JoinGameRequest.class);
+        var data = serializer.fromJson(body, JoinRequest.class);
 
         try{
-            GameService.joinGame(authToken, data.playerColor, data.gameID, authDAO, gameDAO);
+            GameService.joinGame(authToken, data.playerColor(), data.gameID(), authDAO, gameDAO);
             response.status(200);
             return "{}";
         }catch(BadRequestException x){
@@ -87,9 +92,9 @@ public class Handler {
         try{
             String authToken = request.headers("authorization");
             String body = request.body();
-            var data = serializer.fromJson(body, CreateGameRequest.class);
+            var data = serializer.fromJson(body, CreateRequest.class);
 
-            int gameID = GameService.createGame(authToken, data.gameName, authDAO, gameDAO);
+            int gameID = GameService.createGame(authToken, data.gameName(), authDAO, gameDAO);
 
             response.status(200);
             CreateGameResponse result = new CreateGameResponse(gameID);
@@ -150,10 +155,10 @@ public class Handler {
         var serializer = new Gson();
         var data = serializer.fromJson(request.body(), LoginRequest.class);
         try{
-            String authToken = UserService.loginUser(data.username, data.password, userDAO, authDAO);
+            String authToken = UserService.loginUser(data.username(), data.password(), userDAO, authDAO);
 
             response.status(200);
-            RegisterResponse result = new RegisterResponse(data.username, authToken);
+            RegisterResponse result = new RegisterResponse(data.username(), authToken);
             return serializer.toJson(result);
         }catch(BadRequestException x){
             response.status(400);
@@ -177,8 +182,8 @@ public class Handler {
             var data = serializer.fromJson(body, RegisterRequest.class);
 
             //gets the authToken and registers the user
-            String authToken = UserService.registerUser(data.username, data.password, data.email, userDAO, authDAO);
-            RegisterResponse result = new RegisterResponse(data.username, authToken);
+            String authToken = UserService.registerUser(data.username(), data.password(), data.email(), userDAO, authDAO);
+            RegisterResponse result = new RegisterResponse(data.username(), authToken);
 
             response.status(200);
             return serializer.toJson(result);
@@ -192,21 +197,6 @@ public class Handler {
             response.status(500);
             return serializer.toJson(Map.of("message", x.getMessage()));
         }
-    }
-
-    private static class JoinGameRequest {
-        String playerColor;
-        int gameID;
-    }
-
-    private static class CreateGameRequest {
-        String gameName;
-    }
-
-    private static class RegisterRequest {
-        String username;
-        String password;
-        String email;
     }
 
     private static class ListGamesResponse {
@@ -233,11 +223,6 @@ public class Handler {
         CreateGameResponse(int gameID){
             this.gameID = gameID;
         }
-    }
-
-    private static class LoginRequest{
-        String username;
-        String password;
     }
 
     private static class ErrorResponse {

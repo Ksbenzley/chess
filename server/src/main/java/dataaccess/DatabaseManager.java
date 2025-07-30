@@ -1,5 +1,7 @@
 package dataaccess;
 
+import exceptions.DataAccessException;
+
 import java.sql.*;
 import java.util.Properties;
 
@@ -16,7 +18,7 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    static public void useFunction() throws DataAccessException{
+    static public void useFunction() throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()){
             var use = "USE " + databaseName;
             try(var usingDatabase = conn.prepareStatement(use)){
