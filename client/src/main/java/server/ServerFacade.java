@@ -48,9 +48,8 @@ public class ServerFacade {
         return this.makeRequest("POST", path, newGame, GameData.class);
     }
 
-    public class ListGamesResponse {
+    private class ListGamesResponse {
         private ArrayList<GameData> games;
-
         public ArrayList<GameData> getGames() {
             return games;
         }
