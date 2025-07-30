@@ -1,0 +1,179 @@
+import exceptions.BadRequestException;
+import exceptions.DataAccessException;
+import model.GameData;
+import model.UserData;
+
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class clientRequest {
+    private final ServerFacade server;
+    private final String serverUrl;
+    private String authToken;
+    private final HashMap<Integer, GameData> gameList = new HashMap<>();
+    private State state = State.SIGNEDOUT;
+
+
+    public clientRequest(String serverUrl) {
+        server = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
+    }
+
+    public String evaluate(String input) {
+        try {
+            var tokens = input.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "login" -> signIn(params);
+                case "register" -> register(params);
+                case "logout" -> logout();
+                case "create" -> createGame(params);
+                case "list" -> listGames(params);
+                case "play" -> playGame(params);
+                case "observe" -> observeGame(params);
+                case "quit" -> "quit";
+                default -> help();
+            };
+        } catch (BadRequestException x) {
+            return x.getMessage();
+        }
+    }
+
+    public String observeGame(String... params) throws BadRequestException {
+        if (params.length >= 1){
+            int gameID = Integer.parseInt(params[0]);
+            if (!gameList.containsKey(gameID)) {
+                throw new BadRequestException("Game number out of range.");
+            }
+
+//            server.observeGame(gameID);
+            System.out.println("Now observing: " + gameList.get(gameID).gameName());
+            return "";
+        }else{
+            throw new BadRequestException("Expected: <GAME NUMBER>");
+        }
+    }
+
+    public String playGame(String... params) throws BadRequestException {
+        if (params.length >= 2) {
+            int gameNum;
+            try {
+                gameNum = Integer.parseInt(params[0]);
+                gameNum = gameNum + 1;
+            }catch (NumberFormatException e) {
+                throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
+            }
+            String color = params[1];
+
+            server.playGame(gameList.get(gameNum).gameID(), color);
+            System.out.println("Now playing in: " + gameList.get(gameNum).gameName());
+            return "";
+        }else{
+            throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
+        }
+    }
+
+    public void loadGames() throws BadRequestException {
+        ArrayList<GameData> games;
+        int i = 1;
+        games = server.listGames();
+        for(GameData game: games){
+            gameList.put(i, game);
+            i++;
+        }
+    }
+
+    public String listGames(String... params) throws BadRequestException{
+        ArrayList<GameData> games;
+        int i = 1;
+        games = server.listGames();
+        for(GameData game : games){
+            System.out.println(i + ". " + game.gameName());
+            System.out.println("    White Player: " + game.whiteUsername());
+            System.out.println("    Black Player: " + game.blackUsername());
+            i++;
+            gameList.put(i, game);
+        }
+        return "";
+    }
+
+    public String createGame(String... params) throws BadRequestException {
+        if (params.length >= 1) {
+            String name = params[0];
+            server.createGame(name);
+            System.out.println("game created: " + name);
+            return "";
+        }else{
+            throw new BadRequestException("Expected: <GAME NUMBER>");
+        }
+    }
+
+    public String logout(String... params) throws BadRequestException {
+        if (params.length >= 0) {
+            state = State.SIGNEDOUT;
+            server.logout(authToken);
+            authToken = null;
+            System.out.println("You have successfully signed out");
+            return "";
+        }else{
+            throw new BadRequestException("Expected: <GAME NUMBER>");
+        }
+    }
+
+    public String register(String... params) throws BadRequestException {
+        if (params.length >= 3){
+
+            String name = params[0];
+            String pass = params[1];
+            String email = params[2];
+
+            server.register(new UserData(name, pass, email));
+
+            state = State.SIGNEDIN;
+            authToken = server.login(new UserData(name, pass, null)).authToken();
+            loadGames();
+            return "You are signed in as " + name;
+        }else{
+            throw new BadRequestException("Expected: <GAME NUMBER>");
+        }
+    }
+
+    public String signIn(String... params) throws BadRequestException {
+        if (params.length >= 2) {
+            state = State.SIGNEDIN;
+
+            String name = params[0];
+            String pass = params[1];
+
+            authToken = server.login(new UserData(name, pass, null)).authToken();
+            loadGames();
+            return "You are signed in as: " + name;
+        }else{
+            throw new BadRequestException("Expected: <USERNAME> <PASSWORD>");
+        }
+    }
+
+    public String help(){
+        if (state == State.SIGNEDOUT){
+            return """
+                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                    login <USERNAME> <PASSWORD> - to play chess
+                    quit - end the session
+                    help - show commands
+                    """;
+        }else{
+            return """
+                    play game <GAME NUMBER> <WHITE|BLACK> - to play chess
+                    create game <GAME NAME> - to create a new game
+                    observe game <GAME NUMBER> - to watch a game
+                    list games - show all games
+                    logout - to switch accounts
+                    quit - end the session
+                    help - show commands
+                    """;
+        }
+
+    }
+}
