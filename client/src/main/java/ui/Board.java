@@ -8,7 +8,7 @@ import java.util.Arrays;
 import static ui.EscapeSequences.*;
 
 public class Board {
-    private static final String EMPTY = "     ";
+    private static final String EMPTY = "    ";
 
     public static void draw_board(String color){
         ArrayList<String> numIndex;
@@ -35,6 +35,7 @@ public class Board {
     public static void placePieces(Boolean white, int row, int col){
         String piece = EMPTY;
         String bgColor;
+
         if(white){
             bgColor = SET_BG_COLOR_MAGENTA;
         }else{
