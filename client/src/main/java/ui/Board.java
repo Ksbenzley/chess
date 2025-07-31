@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.EMPTY;
+
 
 public class Board {
-    private static final String EMPTY = "    ";
+
 
     public static void draw_board(String color){
         ArrayList<String> numIndex;
@@ -66,7 +68,11 @@ public class Board {
             };
         }
         System.out.print(bgColor);
-        System.out.print(piece);
+        if (!piece.equals(EMPTY)){
+            System.out.print(piece);
+        }else{
+            System.out.print(EMPTY);
+        }
         System.out.print(RESET_BG_COLOR);
     }
 
