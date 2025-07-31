@@ -1,5 +1,7 @@
 package server;
 
+import exceptions.NotAuthorizedException;
+import ui.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import model.GameData;
@@ -41,7 +43,7 @@ public class clientRequest {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (BadRequestException x) {
+        } catch (BadRequestException | NotAuthorizedException | AlreadyTakenException x) {
             return x.getMessage();
         }
     }
@@ -53,8 +55,8 @@ public class clientRequest {
                 throw new BadRequestException("Game number out of range.");
             }
 //            server.observeGame(gameID);
-            System.out.println("Now observing: " + gameList.get(gameID).gameName());
-            return "";
+            //System.out.println("Now observing: " + gameList.get(gameID).gameName());
+            return "Now observing: " + gameList.get(gameID).gameName() + "\n";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER>");
         }
@@ -71,8 +73,10 @@ public class clientRequest {
             String color = params[1];
 
             server.playGame(gameList.get(gameNum).gameID(), color);
-            System.out.println("Now playing in: " + gameList.get(gameNum).gameName());
-            return "";
+            //System.out.println("Now playing in: " + gameList.get(gameNum).gameName());
+            Board board = new Board();
+            //board.main(color);
+            return "Now playing in: " + gameList.get(gameNum).gameName() + "\n";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
         }
@@ -107,6 +111,7 @@ public class clientRequest {
             String name = params[0];
             server.createGame(name);
             System.out.println("game created: " + name);
+            loadGames();
             return "";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER>");
@@ -131,8 +136,8 @@ public class clientRequest {
 
                 server.register(new UserData(name, pass, email));
 
-                state = State.SIGNEDIN;
                 authToken = server.login(new UserData(name, pass, null)).authToken();
+                state = State.SIGNEDIN;
                 loadGames();
                 return "You are signed in as " + name;
             } else {
@@ -145,14 +150,13 @@ public class clientRequest {
 
     public String signIn(String... params) throws BadRequestException {
         if (params.length >= 2) {
-            state = State.SIGNEDIN;
-
             String name = params[0];
             String pass = params[1];
 
             authToken = server.login(new UserData(name, pass, null)).authToken();
             loadGames();
-            return "You are signed in as: " + name;
+            state = State.SIGNEDIN;
+            return "You are signed in as: " + name + "\n";
         }else{
             throw new BadRequestException("Expected: <USERNAME> <PASSWORD>");
         }

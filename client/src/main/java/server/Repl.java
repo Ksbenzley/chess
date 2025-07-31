@@ -18,10 +18,11 @@ public class Repl {
     public void run(){
         System.out.println("Welcome to the Chess Game Interface");
         System.out.println(clientReq.help());
-        System.out.print(">>> ");
+        //System.out.print(">>> ");
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
+            System.out.print(">>> ");
             //printPrompt();
             String line = scanner.nextLine();
 
