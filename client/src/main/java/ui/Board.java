@@ -79,12 +79,12 @@ public class Board {
     public static void draw_headers(String color){
         ArrayList<String> headers;
         if(color.toLowerCase().equals("white")){
-            headers = new ArrayList<>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h"));
+            headers = new ArrayList<>(Arrays.asList(" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "));
         }else{
-            headers = new ArrayList<>(Arrays.asList("h", "g", "f", "e", "d", "c", "b", "a"));
+            headers = new ArrayList<>(Arrays.asList(" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "));
         }
         for(String letter : headers){
-            System.out.print("    " + letter);
+            System.out.print(" " + letter);
         }
     }
 
