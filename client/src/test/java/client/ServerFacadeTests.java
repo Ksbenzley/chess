@@ -41,7 +41,7 @@ public class ServerFacadeTests {
         auth = new SQLAuthDAO();
         game.clear();
         user.clear();
-        game.clear();
+        auth.clear();
     }
 
     @AfterAll

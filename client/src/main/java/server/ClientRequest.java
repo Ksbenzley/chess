@@ -54,9 +54,8 @@ public class ClientRequest {
             if (!gameList.containsKey(gameID)) {
                 throw new BadRequestException("Game number out of range.");
             }
-//            server.observeGame(gameID);
-            //System.out.println("Now observing: " + gameList.get(gameID).gameName());
-            return "Now observing: " + gameList.get(gameID).gameName() + "\n";
+            System.out.println("Now observing: " + gameList.get(gameID).gameName() + "\n");
+            return "";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER>");
         }
@@ -76,7 +75,8 @@ public class ClientRequest {
             //System.out.println("Now playing in: " + gameList.get(gameNum).gameName());
             Board board = new Board();
             board.run(color);
-            return "Now playing in: " + gameList.get(gameNum).gameName() + "\n";
+            System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
+            return "";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
         }
@@ -139,7 +139,7 @@ public class ClientRequest {
                 authToken = server.login(new UserData(name, pass, null)).authToken();
                 state = State.SIGNEDIN;
                 loadGames();
-                return "You are signed in as " + name;
+                return "You are signed in as " + name + "\n";
             } else {
                 throw new BadRequestException("Expected: bad input");
             }
