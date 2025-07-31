@@ -1,7 +1,5 @@
 package ui;
 
-import ui.EscapeSequences;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,7 +10,7 @@ import static ui.EscapeSequences.EMPTY;
 public class Board {
 
 
-    public static void draw_board(String color){
+    public static void drawBoard(String color){
         ArrayList<String> numIndex;
         if(color.equalsIgnoreCase("white")){
             numIndex = new ArrayList<>(Arrays.asList("8", "7", "6", "5", "4", "3", "2", "1"));
@@ -76,7 +74,7 @@ public class Board {
         System.out.print(RESET_BG_COLOR);
     }
 
-    public static void draw_headers(String color){
+    public static void drawHeaders(String color){
         ArrayList<String> headers;
         if(color.toLowerCase().equals("white")){
             headers = new ArrayList<>(Arrays.asList(" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "));
@@ -89,11 +87,11 @@ public class Board {
     }
 
     public static void run(String color){
-        draw_headers(color);
-        draw_board(color);
+        drawHeaders(color);
+        drawBoard(color);
     }
 
-    public static void main(String[] args){
-        run("WHITE");
-    }
+//    public static void main(String[] args){
+//        run("BLACK");
+//    }
 }

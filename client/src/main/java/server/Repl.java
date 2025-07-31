@@ -9,10 +9,10 @@ import java.util.Scanner;
 public class Repl {
 
     public State state = State.SIGNEDOUT;
-    public clientRequest clientReq;
+    public ClientRequest clientReq;
 
     public Repl(String serverUrl) {
-        this.clientReq = new clientRequest(serverUrl);
+        this.clientReq = new ClientRequest(serverUrl);
     }
 
     public void run(){

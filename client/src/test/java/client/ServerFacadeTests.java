@@ -20,7 +20,7 @@ public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
-    private static clientRequest client;
+    private static ClientRequest client;
     AuthDAO auth;
     GameDAO game;
     UserDAO user;
@@ -31,7 +31,7 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
-        client = new clientRequest("http://localhost:" + port);
+        client = new ClientRequest("http://localhost:" + port);
     }
 
     @BeforeEach

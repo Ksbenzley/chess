@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class clientRequest {
+public class ClientRequest {
     private final ServerFacade server;
     private final String serverUrl;
     private String authToken;
@@ -22,7 +22,7 @@ public class clientRequest {
         return gameList;
     }
 
-    public clientRequest(String serverUrl) {
+    public ClientRequest(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
     }
@@ -75,7 +75,7 @@ public class clientRequest {
             server.playGame(gameList.get(gameNum).gameID(), color);
             //System.out.println("Now playing in: " + gameList.get(gameNum).gameName());
             Board board = new Board();
-            //board.main(color);
+            board.run(color);
             return "Now playing in: " + gameList.get(gameNum).gameName() + "\n";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
