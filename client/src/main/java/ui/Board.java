@@ -90,8 +90,4 @@ public class Board {
         drawHeaders(color);
         drawBoard(color);
     }
-
-//    public static void main(String[] args){
-//        run("BLACK");
-//    }
 }
