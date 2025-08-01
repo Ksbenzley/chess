@@ -23,7 +23,6 @@ public class Repl {
         var result = "";
         while (!result.equals("quit")) {
             System.out.print(">>> ");
-            //printPrompt();
             String line = scanner.nextLine();
 
             try {

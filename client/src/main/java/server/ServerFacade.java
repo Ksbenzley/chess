@@ -130,17 +130,17 @@ public class ServerFacade {
             }
             switch (status){
                 case 400 -> {
-                    if(error.toLowerCase().contains("username already taken")){
-                        throw new AlreadyTakenException(error);
+                    if(error.toLowerCase().contains("username already taken\n")){
+                        throw new AlreadyTakenException(error + "\n");
                     }else{
-                        throw new BadRequestException(error);
+                        throw new BadRequestException(error + "\n");
                     }
                 }
                 case 401 -> {
-                    throw new NotAuthorizedException("Error: Not Authorized");
+                    throw new NotAuthorizedException("Error: Not Authorized\n");
                 }
-                case 403 -> throw new AlreadyTakenException(error);
-                default -> throw new BadRequestException(error);
+                case 403 -> throw new AlreadyTakenException(error + "\n");
+                default -> throw new BadRequestException(error + "\n");
             }
         }
     }

@@ -49,25 +49,36 @@ public class ClientRequest {
     }
 
     public String observeGame(String... params) throws BadRequestException {
+        int gameID;
         if (params.length >= 1){
-            int gameID = Integer.parseInt(params[0]);
-            if (!gameList.containsKey(gameID)) {
-                throw new BadRequestException("Game number out of range.");
+            try {
+                gameID = Integer.parseInt(params[0]);
+            }catch(NumberFormatException e){
+                throw new BadRequestException("Expected: <GAME NUMBER>" + "\n");
             }
+
+            if (!gameList.containsKey(gameID)) {
+                throw new BadRequestException("Error: game number out of range" + "\n");
+            }
+            Board board = new Board();
+            board.run("WHITE");
             System.out.println("Now observing: " + gameList.get(gameID).gameName() + "\n");
             return "";
         }else{
-            throw new BadRequestException("Expected: <GAME NUMBER>");
+            throw new BadRequestException("Expected: <GAME NUMBER>" + "\n");
         }
     }
 
-    public String playGame(String... params) throws BadRequestException {
+    public String playGame(String... params) throws BadRequestException, NumberFormatException {
         if (params.length >= 2) {
             int gameNum;
             try {
                 gameNum = Integer.parseInt(params[0]);
+                if (gameList.size() < gameNum || gameNum <= 0){
+                    throw new BadRequestException("Error: game number out of range" + "\n");
+                }
             }catch (NumberFormatException e) {
-                throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
+                throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>" + "\n");
             }
             String color = params[1];
 
@@ -78,7 +89,7 @@ public class ClientRequest {
             System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
             return "";
         }else{
-            throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>");
+            throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>" + "\n");
         }
     }
 
@@ -114,7 +125,7 @@ public class ClientRequest {
             loadGames();
             return "";
         }else{
-            throw new BadRequestException("Expected: <GAME NUMBER>");
+            throw new BadRequestException("Expected: <GAME NAME>");
         }
     }
 

@@ -23,16 +23,16 @@ public class Board {
             for (int col = 0; col < 8; col++) {
                 boolean isWhiteSquare = (row + col) % 2 == 0;
                 if (isWhiteSquare) {
-                    placePieces(true, row, col);
+                    placePieces(true, row, col, color);
                 } else {
-                    placePieces(false, row, col);
+                    placePieces(false, row, col, color);
                 }
             }
             System.out.println();
         }
     }
 
-    public static void placePieces(Boolean white, int row, int col){
+    public static void placePieces(Boolean white, int row, int col, String color){
         String piece = EMPTY;
         String bgColor;
 
@@ -43,26 +43,98 @@ public class Board {
         }
 
         if (row == 0){
-            piece = switch (col) {
-                case 0, 7 -> BLACK_ROOK;
-                case 1, 6 -> BLACK_KNIGHT;
-                case 2, 5 -> BLACK_BISHOP;
-                case 3 -> BLACK_QUEEN;
-                case 4 -> BLACK_KING;
-                default -> EMPTY;
+            switch (col) {
+                case 0, 7:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = WHITE_ROOK;
+                    }else{
+                        piece = BLACK_ROOK;
+                    }
+                    break;
+                case 1, 6:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = WHITE_KNIGHT;
+                    }else{
+                        piece = BLACK_KNIGHT;
+                    }
+                    break;
+                case 2, 5:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = WHITE_BISHOP;
+                    }else{
+                        piece = BLACK_BISHOP;
+                    }
+                    break;
+                case 3:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = WHITE_QUEEN;
+                    }else{
+                        piece = BLACK_KING;
+                    }
+                    break;
+                case 4:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = WHITE_KING;
+                    }else {
+                        piece = BLACK_QUEEN;
+                    }
+                    break;
+                default:
+                    piece = EMPTY;
+                    break;
             };
         }else if(row == 1){
-            piece = BLACK_PAWN;
+            if(color.equalsIgnoreCase("white")){
+                piece = WHITE_PAWN;
+            }else{
+                piece = BLACK_PAWN;
+            }
         }else if (row == 6){
-            piece = WHITE_PAWN;
+            if(color.equalsIgnoreCase("white")){
+                piece = BLACK_PAWN;
+            }else{
+                piece = WHITE_PAWN;
+            }
         }else if (row == 7){
-            piece = switch (col) {
-                case 0, 7 -> WHITE_ROOK;
-                case 1, 6 -> WHITE_KNIGHT;
-                case 2, 5 -> WHITE_BISHOP;
-                case 3 -> WHITE_QUEEN;
-                case 4 -> WHITE_KING;
-                default -> EMPTY;
+            switch (col) {
+                case 0, 7:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = BLACK_ROOK;
+                    }else{
+                        piece = WHITE_ROOK;
+                    }
+                    break;
+                case 1, 6:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = BLACK_KNIGHT;
+                    }else{
+                        piece = WHITE_KNIGHT;
+                    }
+                    break;
+                case 2, 5:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = BLACK_BISHOP;
+                    }else{
+                        piece = WHITE_BISHOP;
+                    }
+                    break;
+                case 3:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = BLACK_QUEEN;
+                    }else{
+                        piece = WHITE_KING;
+                    }
+                    break;
+                case 4:
+                    if(color.equalsIgnoreCase("white")){
+                        piece = BLACK_KING;
+                    }else {
+                        piece = WHITE_QUEEN;
+                    }
+                    break;
+                default:
+                    piece = EMPTY;
+                    break;
             };
         }
         System.out.print(bgColor);
