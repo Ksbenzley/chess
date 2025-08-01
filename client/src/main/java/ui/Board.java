@@ -2,13 +2,10 @@ package ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import static ui.EscapeSequences.*;
 import static ui.EscapeSequences.EMPTY;
 
-
 public class Board {
-
 
     public static void drawBoard(String color){
         ArrayList<String> numIndex;

@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessBoard;
 import exceptions.NotAuthorizedException;
 import ui.*;
 import exceptions.AlreadyTakenException;
@@ -60,8 +61,10 @@ public class ClientRequest {
             if (!gameList.containsKey(gameID)) {
                 throw new BadRequestException("Error: game number out of range" + "\n");
             }
-            Board board = new Board();
-            board.run("WHITE");
+//            ChessBoard board = new ChessBoard();
+//            board.resetBoard();
+            Board makeBoard = new Board();
+            makeBoard.run("WHITE");
             System.out.println("Now observing: " + gameList.get(gameID).gameName() + "\n");
             return "";
         }else{
@@ -83,7 +86,8 @@ public class ClientRequest {
             String color = params[1];
 
             server.playGame(gameList.get(gameNum).gameID(), color);
-            //System.out.println("Now playing in: " + gameList.get(gameNum).gameName());
+//            ChessBoard board = new ChessBoard();
+//            board.resetBoard();
             Board board = new Board();
             board.run(color);
             System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
