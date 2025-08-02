@@ -73,7 +73,6 @@ public class ServerFacade {
     public void playGame(int gameID, String color) throws BadRequestException {
         var path = "/game";
         JoinRequest request = new JoinRequest(color.toUpperCase(), gameID);
-        //make ui here??
         this.makeRequest("PUT", path, request, null);
     }
 

@@ -17,6 +17,7 @@ public class ClientRequest {
     private final String serverUrl;
     private String authToken;
     private final HashMap<Integer, GameData> gameList = new HashMap<>();
+    private final HashMap<Integer, ChessBoard> boardList = new HashMap<>();
     private State state = State.SIGNEDOUT;
 
     public HashMap<Integer, GameData> getGameList(){
@@ -61,10 +62,11 @@ public class ClientRequest {
             if (!gameList.containsKey(gameID)) {
                 throw new BadRequestException("Error: game number out of range" + "\n");
             }
-//            ChessBoard board = new ChessBoard();
-//            board.resetBoard();
+            ChessBoard newBoard = new ChessBoard();
+            newBoard.resetBoard();
+            boardList.put(gameList.get(gameID).gameID(), newBoard);
             Board makeBoard = new Board();
-            makeBoard.run("WHITE");
+            makeBoard.run("WHITE", newBoard);
             System.out.println("Now observing: " + gameList.get(gameID).gameName() + "\n");
             return "";
         }else{
@@ -86,10 +88,12 @@ public class ClientRequest {
             String color = params[1];
 
             server.playGame(gameList.get(gameNum).gameID(), color);
-//            ChessBoard board = new ChessBoard();
-//            board.resetBoard();
-            Board board = new Board();
-            board.run(color);
+
+            ChessBoard newBoard = new ChessBoard();
+            newBoard.resetBoard();
+            boardList.put(gameList.get(gameNum).gameID(), newBoard);
+            Board makeBoard = new Board();
+            makeBoard.run(color, newBoard);
             System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
             return "";
         }else{

@@ -53,7 +53,6 @@ public class ChessBoard {
             if(position.getRow() == 2){
                 for (int col = 1; col <= 8; col++){
                     addPiece(new ChessPosition(position.getRow(), col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-                    //squares[row][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
                 }
             }else if (position.getRow() == 7){
                 for (int col = 1; col <= 8; col++){

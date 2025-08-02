@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import exceptions.DataAccessException;
 import model.GameData;
 
