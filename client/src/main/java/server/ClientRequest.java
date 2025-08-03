@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 public class ClientRequest {
     private final ServerFacade server;
+    private Boolean inGameplay = false;
     private final String serverUrl;
     private String authToken;
     private final HashMap<Integer, GameData> gameList = new HashMap<>();
@@ -94,6 +95,7 @@ public class ClientRequest {
             boardList.put(gameList.get(gameNum).gameID(), newBoard);
             Board makeBoard = new Board();
             makeBoard.run(color, newBoard);
+            inGameplay = true;
             System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
             return "";
         }else{
@@ -182,24 +184,34 @@ public class ClientRequest {
     }
 
     public String help(){
-        if (state == State.SIGNEDOUT){
+        if (state == State.SIGNEDIN){
+            if(inGameplay == false) {
+                return """
+                        play game <GAME NUMBER> <WHITE|BLACK> - to play chess
+                        create game <GAME NAME> - to create a new game
+                        observe game <GAME NUMBER> - to watch a game
+                        list games - show all games
+                        logout - to switch accounts
+                        quit - end the session
+                        help - show commands
+                        """;
+            }else{
+                return """
+                        move - make a chess move
+                        resign - resign from the game
+                        redraw - update the chessboard
+                        leave - leave the game
+                        highlight - show legal moves
+                        help - show commands
+                        """;
+            }
+        }else {
             return """
                     register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                     login <USERNAME> <PASSWORD> - to play chess
                     quit - end the session
                     help - show commands
                     """;
-        }else{
-            return """
-                    play game <GAME NUMBER> <WHITE|BLACK> - to play chess
-                    create game <GAME NAME> - to create a new game
-                    observe game <GAME NUMBER> - to watch a game
-                    list games - show all games
-                    logout - to switch accounts
-                    quit - end the session
-                    help - show commands
-                    """;
         }
-
     }
 }
