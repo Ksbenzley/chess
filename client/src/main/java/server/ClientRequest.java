@@ -35,20 +35,38 @@ public class ClientRequest {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "login" -> signIn(params);
-                case "register" -> register(params);
-                case "logout" -> logout();
-                case "create" -> createGame(params);
-                case "list" -> listGames(params);
-                case "play" -> playGame(params);
-                case "observe" -> observeGame(params);
-                case "quit" -> "quit";
-                default -> help();
-            };
+            if(state == State.SIGNEDIN) {
+                if(inGameplay){
+                    return switch (cmd) {
+                        case "redraw" -> redraw(params);
+                        case "quit" -> "quit";
+                        default -> help();
+                    };
+                }
+                return switch (cmd) {
+                    case "logout" -> logout();
+                    case "create" -> createGame(params);
+                    case "list" -> listGames(params);
+                    case "play" -> playGame(params);
+                    case "observe" -> observeGame(params);
+                    case "quit" -> "quit";
+                    default -> help();
+                };
+            }else{
+                return switch (cmd) {
+                    case "login" -> signIn(params);
+                    case "register" -> register(params);
+                    case "quit" -> "quit";
+                    default -> help();
+                };
+            }
         } catch (BadRequestException | NotAuthorizedException | AlreadyTakenException x) {
             return x.getMessage();
         }
+    }
+
+    public String redraw(String... params){
+        return "redraw board here";
     }
 
     public String observeGame(String... params) throws BadRequestException {
@@ -164,12 +182,12 @@ public class ClientRequest {
             } else {
                 throw new BadRequestException("Expected: bad input");
             }
-        }catch (AlreadyTakenException e){
+        } catch (AlreadyTakenException e) {
             throw e;
         }
     }
 
-    public String signIn(String... params) throws BadRequestException {
+    public String signIn(String... params) throws BadRequestException, NotAuthorizedException {
         if (params.length >= 2) {
             String name = params[0];
             String pass = params[1];
@@ -178,7 +196,7 @@ public class ClientRequest {
             loadGames();
             state = State.SIGNEDIN;
             return "You are signed in as: " + name + "\n";
-        }else{
+        } else {
             throw new BadRequestException("Expected: <USERNAME> <PASSWORD>");
         }
     }
