@@ -106,7 +106,7 @@ public class ClientRequest {
             }
             String color = params[1];
 
-            server.playGame(gameList.get(gameNum).gameID(), color);
+            server.playGame(authToken, gameList.get(gameNum).gameID(), color);
 
             ChessBoard newBoard = new ChessBoard();
             newBoard.resetBoard();

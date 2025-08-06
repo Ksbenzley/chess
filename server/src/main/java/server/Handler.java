@@ -35,6 +35,10 @@ public class Handler {
         }
     }
 
+    public static GameDAO getDAO(){
+        return gameDAO;
+    }
+
     public static Object joinGame(Request request, Response response) throws DataAccessException {
         createDB();
         response.type("application/json");

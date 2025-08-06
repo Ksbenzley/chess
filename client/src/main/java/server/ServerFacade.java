@@ -70,10 +70,16 @@ public class ServerFacade {
         this.makeRequest("PUT", path, game, null);
     }
 
-    public void playGame(int gameID, String color) throws BadRequestException {
+    public void playGame(String authToken, int gameID, String color) throws BadRequestException {
         var path = "/game";
         JoinRequest request = new JoinRequest(color.toUpperCase(), gameID);
         this.makeRequest("PUT", path, request, null);
+
+        try {
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass)
