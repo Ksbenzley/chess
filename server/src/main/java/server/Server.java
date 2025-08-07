@@ -1,5 +1,7 @@
 package server;
 
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import spark.*;
 import websocket.*;
 
@@ -9,7 +11,11 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-        Spark.webSocket("/ws", WebSocketHandler.class);
+        Handler handle = new Handler();
+        AuthDAO auth = handle.getAuthDAO();
+        GameDAO game = handle.getGameDAO();
+        WebSocketHandler ws = new WebSocketHandler(auth, game);
+        Spark.webSocket("/ws", ws);
 
         // Register your endpoints and handle exceptions here.
         //register

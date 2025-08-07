@@ -1,13 +1,16 @@
 package server;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import ui.Board;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameServerMessage;
 import websocket.messages.ServerMessage;
-
+import chess.ChessGame.*;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
@@ -18,16 +21,48 @@ public class WebSocketClient extends Endpoint{
     public Session session;
     public String userName;
     AuthDAO authDAO;
+    public TeamColor teamColor;
+    private Gson serializer = new Gson();
+    private final String authToken;
+    private int gameID;
+    private String color;
+    private Boolean isObserver;
 
-    public WebSocketClient(String authToken, int gameID) throws BadRequestException, URISyntaxException, DeploymentException, IOException, DataAccessException {
+    public WebSocketClient(String authToken, int gameID, String color, Boolean isObserver)
+            throws BadRequestException, URISyntaxException, DeploymentException, IOException, DataAccessException {
+
+        this.authToken = authToken;
+        this.gameID = gameID;
+        this.color = color;
+        this.isObserver = isObserver;
+
+        if(color.equalsIgnoreCase("WHITE")){
+            this.teamColor = TeamColor.WHITE;
+        }else if (color.equalsIgnoreCase("BLACK")){
+            this.teamColor = TeamColor.BLACK;
+        }else{
+            this.teamColor = null;
+        }
         userName = authDAO.getUser(authToken);
         URI uri = new URI("ws://localhost:8080/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
 
-        var serializer = new Gson();
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, userName);
-        send(serializer.toJson(command));
+    }
+
+    public void sendResign() throws IOException {
+        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, userName, color, isObserver, null);
+        send(serializer.toJson(connect));
+    }
+
+    public void sendMakeMove(ChessMove move) throws IOException {
+        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, userName, color, isObserver, move);
+        send(serializer.toJson(connect));
+    }
+
+    public void sendConnect() throws IOException{
+        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, userName, color, isObserver, null);
+        send(serializer.toJson(connect));
     }
 
     public void send(String msg) throws BadRequestException, IOException {
@@ -38,10 +73,14 @@ public class WebSocketClient extends Endpoint{
     public void onMessage(String message){
         var serializer = new Gson();
         var command = serializer.fromJson(message, ServerMessage.class);
-        System.out.println(message + "\n");
+        ServerMessage.ServerMessageType type = command.getServerMessageType();
 
-        if(command.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-
+        switch(type){
+            case LOAD_GAME:
+                LoadGameServerMessage msg = serializer.fromJson(message, LoadGameServerMessage.class);
+                ChessGame game = msg.getGame();
+                Board makeBoard = new Board();
+                makeBoard.run(teamColor.toString(), game.getBoard());
         }
     }
 

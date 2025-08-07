@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessMove;
 import com.google.gson.JsonObject;
 import exceptions.*;
 import com.google.gson.Gson;
@@ -27,6 +28,15 @@ public class ServerFacade {
         AuthData data = this.makeRequest("POST", path, request, AuthData.class);
         authToken = data.authToken();
         return data;
+    }
+
+    public void makeMove(ChessMove move, int gameID, String color){
+        try {
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true);
+            webSocket.sendMakeMove(move);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public AuthData register(UserData userData) throws AlreadyTakenException {
@@ -61,13 +71,20 @@ public class ServerFacade {
         return response.getGames();
     }
 
-    public void observeGame(int gameNum) throws BadRequestException {
+    public void observeGame(int gameNum, String authToken, int gameID, String color) throws BadRequestException {
         var path = "/game";
         ArrayList games;
         Object game;
         games = listGames();
         game = games.get(gameNum);
         this.makeRequest("PUT", path, game, null);
+
+        try {
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true);
+            webSocket.sendConnect();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void playGame(String authToken, int gameID, String color) throws BadRequestException {
@@ -76,7 +93,8 @@ public class ServerFacade {
         this.makeRequest("PUT", path, request, null);
 
         try {
-            WebSocketClient webSocket = new WebSocketClient(authToken, gameID);
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
+            webSocket.sendConnect();
         }catch (Exception e){
             e.printStackTrace();
         }

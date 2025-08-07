@@ -1,10 +1,12 @@
 package service;
+import chess.ChessGame;
 import dataaccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import exceptions.NotAuthorizedException;
 import model.GameData;
+import server.GameManager;
 
 import java.util.ArrayList;
 
@@ -40,7 +42,10 @@ public class GameService {
             if(memoryGameDAO.gameExists(gameName)){
                 throw new BadRequestException("Error: bad request");
             }else{
-                return memoryGameDAO.addGame(memoryGameDAO.createGameID(), gameName);
+                int gameID = memoryGameDAO.createGameID();
+                ChessGame game = new ChessGame();
+                GameManager.addGame(gameID, game);
+                return memoryGameDAO.addGame(gameID, gameName);
             }
         }else{
             throw new NotAuthorizedException("Error: unauthorized");

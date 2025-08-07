@@ -1,4 +1,6 @@
 package model;
 
-public record GameData(Integer gameID, String whiteUsername, String blackUsername, String gameName) {
+import chess.ChessBoard;
+
+public record GameData(Integer gameID, String whiteUsername, String blackUsername, String gameName, ChessBoard board) {
 }

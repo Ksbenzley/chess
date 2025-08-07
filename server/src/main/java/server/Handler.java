@@ -35,7 +35,11 @@ public class Handler {
         }
     }
 
-    public static GameDAO getDAO(){
+    public static AuthDAO getAuthDAO(){
+        return authDAO;
+    }
+
+    public static GameDAO getGameDAO(){
         return gameDAO;
     }
 

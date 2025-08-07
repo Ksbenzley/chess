@@ -1,6 +1,9 @@
 package server;
 
 import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import exceptions.NotAuthorizedException;
 import ui.*;
 import exceptions.AlreadyTakenException;
@@ -20,6 +23,8 @@ public class ClientRequest {
     private final HashMap<Integer, GameData> gameList = new HashMap<>();
     private final HashMap<Integer, ChessBoard> boardList = new HashMap<>();
     private State state = State.SIGNEDOUT;
+    private int gameID;
+    private Boolean whitePlayer;
 
     public HashMap<Integer, GameData> getGameList(){
         return gameList;
@@ -38,8 +43,11 @@ public class ClientRequest {
             if(state == State.SIGNEDIN) {
                 if(inGameplay){
                     return switch (cmd) {
-                        case "redraw" -> redraw(params);
-                        case "quit" -> "quit";
+                        case "redraw" -> redraw();
+                        case "leave" -> leaveGame();
+                        case "move" -> makeMove(params);
+                        case "resign" -> resign(params);
+                        case "show" -> showMoves(params);
                         default -> help();
                     };
                 }
@@ -65,28 +73,90 @@ public class ClientRequest {
         }
     }
 
-    public String redraw(String... params){
-        return "redraw board here";
+    public void redraw(){
+        //            ChessBoard newBoard = new ChessBoard();
+//            newBoard.resetBoard();
+//            boardList.put(gameList.get(gameID).gameID(), newBoard);
+//            Board makeBoard = new Board();
+//            makeBoard.run("WHITE", newBoard);
+
+        ChessBoard board = gameList.get(gameID).board();
+        Board makeBoard = new Board();
+        makeBoard.run(color, board);
+
+    }
+
+    public void makeMove(String... params){
+        ChessBoard board = gameList.get(gameID).board();
+        if (params.length >= 2) {
+            try {
+                ChessPosition start = getPos(params[0]);
+                ChessPosition end = getPos(params[1]);
+                ChessPiece.PieceType piece = board.getPiece(start).getPieceType();
+
+                if (piece == null) {
+                    throw new BadRequestException("No piece at starting position.");
+                }
+
+                ChessMove move = new ChessMove(start, end, piece);
+                server.makeMove(move, gameID, null);
+            } catch (Exception e) {
+                System.out.print(e.getMessage());
+            }
+        }else{
+            throw new BadRequestException("Expected: <START POSITION> <END POSITION>");
+        }
+    }
+
+    public ChessPosition getPos(String position){
+        char row = position.charAt(1);
+        char col = position.charAt(0);
+        if(whitePlayer) {
+            switch (col) {
+                case 'a' -> col = 1;
+                case 'b' -> col = 2;
+                case 'c' -> col = 3;
+                case 'd' -> col = 4;
+                case 'e' -> col = 5;
+                case 'f' -> col = 6;
+                case 'g' -> col = 7;
+                case 'h' -> col = 8;
+            }
+        }else{
+            switch (col) {
+                case 'a' -> col = 8;
+                case 'b' -> col = 7;
+                case 'c' -> col = 6;
+                case 'd' -> col = 5;
+                case 'e' -> col = 4;
+                case 'f' -> col = 3;
+                case 'g' -> col = 2;
+                case 'h' -> col = 1;
+            }
+        }
+        ChessPosition pos = new ChessPosition(row, col);
+        return pos;
     }
 
     public String observeGame(String... params) throws BadRequestException {
-        int gameID;
+        int gameNum;
         if (params.length >= 1){
             try {
-                gameID = Integer.parseInt(params[0]);
+                gameNum = Integer.parseInt(params[0]);
             }catch(NumberFormatException e){
                 throw new BadRequestException("Expected: <GAME NUMBER>" + "\n");
             }
 
-            if (!gameList.containsKey(gameID)) {
+            if (!gameList.containsKey(gameNum)) {
                 throw new BadRequestException("Error: game number out of range" + "\n");
             }
-            ChessBoard newBoard = new ChessBoard();
-            newBoard.resetBoard();
-            boardList.put(gameList.get(gameID).gameID(), newBoard);
-            Board makeBoard = new Board();
-            makeBoard.run("WHITE", newBoard);
-            System.out.println("Now observing: " + gameList.get(gameID).gameName() + "\n");
+//            ChessBoard newBoard = new ChessBoard();
+//            newBoard.resetBoard();
+//            boardList.put(gameList.get(gameID).gameID(), newBoard);
+//            Board makeBoard = new Board();
+//            makeBoard.run("WHITE", newBoard);
+            server.observeGame(gameNum, authToken, gameList.get(gameNum).gameID(), "WHITE");
+            System.out.println("Now observing: " + gameList.get(gameNum).gameName() + "\n");
             return "";
         }else{
             throw new BadRequestException("Expected: <GAME NUMBER>" + "\n");
@@ -98,6 +168,7 @@ public class ClientRequest {
             int gameNum;
             try {
                 gameNum = Integer.parseInt(params[0]);
+                gameID = Integer.parseInt(params[0]);
                 if (gameList.size() < gameNum || gameNum <= 0){
                     throw new BadRequestException("Error: game number out of range" + "\n");
                 }
@@ -105,14 +176,19 @@ public class ClientRequest {
                 throw new BadRequestException("Expected: <GAME NUMBER> <WHITE|BLACK>" + "\n");
             }
             String color = params[1];
+            if(color.equalsIgnoreCase("white")){
+                whitePlayer = true;
+            }else{
+                whitePlayer = false;
+            }
 
             server.playGame(authToken, gameList.get(gameNum).gameID(), color);
 
-            ChessBoard newBoard = new ChessBoard();
-            newBoard.resetBoard();
-            boardList.put(gameList.get(gameNum).gameID(), newBoard);
-            Board makeBoard = new Board();
-            makeBoard.run(color, newBoard);
+//            ChessBoard newBoard = new ChessBoard();
+//            newBoard.resetBoard();
+//            boardList.put(gameList.get(gameNum).gameID(), newBoard);
+//            Board makeBoard = new Board();
+//            makeBoard.run(color, newBoard);
             inGameplay = true;
             System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
             return "";
@@ -205,17 +281,17 @@ public class ClientRequest {
         if (state == State.SIGNEDIN){
             if(inGameplay == false) {
                 return """
-                        play game <GAME NUMBER> <WHITE|BLACK> - to play chess
-                        create game <GAME NAME> - to create a new game
-                        observe game <GAME NUMBER> - to watch a game
-                        list games - show all games
+                        play <GAME NUMBER> <WHITE|BLACK> - to play chess
+                        create <GAME NAME> - to create a new game
+                        observe <GAME NUMBER> - to watch a game
+                        list - show all games
                         logout - to switch accounts
                         quit - end the session
                         help - show commands
                         """;
             }else{
                 return """
-                        move - make a chess move
+                        move <START POSITION> <END POSITION>- make a chess move
                         resign - resign from the game
                         redraw - update the chessboard
                         leave - leave the game
