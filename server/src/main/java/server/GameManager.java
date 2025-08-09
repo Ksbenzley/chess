@@ -12,6 +12,10 @@ public class GameManager {
         saver.put(gameID, game);
     }
 
+    public static void removeGame(int gameID){
+        saver.remove(gameID);
+    }
+
     public static ChessGame getGame(int gameID){
         return saver.get(gameID);
     }

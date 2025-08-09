@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessBoard;
 import chess.ChessMove;
 import com.google.gson.JsonObject;
 import exceptions.*;
@@ -8,6 +9,8 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import requests.*;
+
+import javax.websocket.DeploymentException;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -28,6 +31,11 @@ public class ServerFacade {
         AuthData data = this.makeRequest("POST", path, request, AuthData.class);
         authToken = data.authToken();
         return data;
+    }
+
+    public void resign(int gameID, String color) throws DeploymentException, URISyntaxException, IOException, DataAccessException {
+        WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
+        webSocket.sendResign();
     }
 
     public void makeMove(ChessMove move, int gameID, String color){

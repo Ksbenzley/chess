@@ -36,7 +36,7 @@ public class SQLGameDAO implements GameDAO{
 
             while(rs.next()){
                 GameData newData = new GameData(rs.getInt("id"), rs.getString("whiteUsername"),
-                        rs.getString("blackUsername"), rs.getString("gameName"));
+                        rs.getString("blackUsername"), rs.getString("gameName"), null);
                 result.add(newData);
             }
         }catch (SQLException x){

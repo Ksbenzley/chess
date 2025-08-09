@@ -14,10 +14,10 @@ public class MemoryGameDAO implements GameDAO{
     public void setPlayerColor(String playerColor, int gameID, String userName){
         GameData currentGame = gameDB.get(gameID);
         if(playerColor.equals("WHITE")){
-            GameData newGame = new GameData(gameID, userName, currentGame.blackUsername(), currentGame.gameName());
+            GameData newGame = new GameData(gameID, userName, currentGame.blackUsername(), currentGame.gameName(), null);
             gameDB.replace(gameID, newGame);
         }else if(playerColor.equals("BLACK")){
-            GameData newGame = new GameData(gameID, currentGame.whiteUsername(), userName, currentGame.gameName());
+            GameData newGame = new GameData(gameID, currentGame.whiteUsername(), userName, currentGame.gameName(), null);
             gameDB.replace(gameID, newGame);
         }
     }
@@ -72,7 +72,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     public Integer addGame(int gameID, String gameName){
-        GameData game = new GameData(gameID, null, null, gameName);
+        GameData game = new GameData(gameID, null, null, gameName, null);
         gameDB.put(gameID, game);
         return gameID;
     }

@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
@@ -7,6 +8,7 @@ import dataaccess.AuthDAO;
 import exceptions.BadRequestException;
 import exceptions.DataAccessException;
 import ui.Board;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameServerMessage;
 import websocket.messages.ServerMessage;
@@ -51,17 +53,17 @@ public class WebSocketClient extends Endpoint{
     }
 
     public void sendResign() throws IOException {
-        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, userName, color, isObserver, null);
+        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
         send(serializer.toJson(connect));
     }
 
     public void sendMakeMove(ChessMove move) throws IOException {
-        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, userName, color, isObserver, move);
+        MakeMoveCommand connect = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
         send(serializer.toJson(connect));
     }
 
     public void sendConnect() throws IOException{
-        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, userName, color, isObserver, null);
+        UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
         send(serializer.toJson(connect));
     }
 

@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 
 public class NotificationServerMessage extends ServerMessage{
 
-    String notificationText;
+    String message;
 
-    public NotificationServerMessage(String notificationText){
+    public NotificationServerMessage(String message){
         super(ServerMessageType.NOTIFICATION);
-        this.notificationText = notificationText;
+        this.message = message;
     }
 
     public String toString(){

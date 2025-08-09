@@ -14,12 +14,22 @@ public class ChessGame {
 
     TeamColor teamTurn;
     ChessBoard chessBoard;
+    Boolean gameOver;
 
     public ChessGame() {
         //resets starting team and board at the beginning of every game
         teamTurn = TeamColor.WHITE;
         chessBoard = new ChessBoard();
         chessBoard.resetBoard();
+        gameOver = false;
+    }
+
+    public void setGameOver(Boolean game){
+        gameOver = game;
+    }
+
+    public Boolean getGameOver(){
+        return gameOver;
     }
 
     /**

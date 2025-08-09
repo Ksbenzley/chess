@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import exceptions.DataAccessException;
 import exceptions.NotAuthorizedException;
 import ui.*;
 import exceptions.AlreadyTakenException;
@@ -11,6 +12,9 @@ import exceptions.BadRequestException;
 import model.GameData;
 import model.UserData;
 
+import javax.websocket.DeploymentException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +25,7 @@ public class ClientRequest {
     private final String serverUrl;
     private String authToken;
     private final HashMap<Integer, GameData> gameList = new HashMap<>();
-    private final HashMap<Integer, ChessBoard> boardList = new HashMap<>();
+    //private final HashMap<Integer, ChessBoard> boardList = new HashMap<>();
     private State state = State.SIGNEDOUT;
     private int gameID;
     private Boolean whitePlayer;
@@ -44,10 +48,10 @@ public class ClientRequest {
                 if(inGameplay){
                     return switch (cmd) {
                         case "redraw" -> redraw();
-                        case "leave" -> leaveGame();
+                        //case "leave" -> leaveGame();
                         case "move" -> makeMove(params);
-                        case "resign" -> resign(params);
-                        case "show" -> showMoves(params);
+                        case "resign" -> resign();
+                        //case "show" -> showMoves(params);
                         default -> help();
                     };
                 }
@@ -68,25 +72,33 @@ public class ClientRequest {
                     default -> help();
                 };
             }
-        } catch (BadRequestException | NotAuthorizedException | AlreadyTakenException x) {
+        } catch (BadRequestException | NotAuthorizedException | AlreadyTakenException | DeploymentException |
+        URISyntaxException | IOException | DataAccessException x) {
             return x.getMessage();
         }
     }
 
-    public void redraw(){
-        //            ChessBoard newBoard = new ChessBoard();
-//            newBoard.resetBoard();
-//            boardList.put(gameList.get(gameID).gameID(), newBoard);
-//            Board makeBoard = new Board();
-//            makeBoard.run("WHITE", newBoard);
-
-        ChessBoard board = gameList.get(gameID).board();
-        Board makeBoard = new Board();
-        makeBoard.run(color, board);
-
+    public String resign() throws DeploymentException, URISyntaxException, IOException, DataAccessException {
+        if (whitePlayer) {
+            server.resign(gameID, "WHITE");
+        }else{
+            server.resign(gameID, "BLACK");
+        }
+        return "";
     }
 
-    public void makeMove(String... params){
+    public String redraw(){
+        ChessBoard board = gameList.get(gameID).board();
+        Board makeBoard = new Board();
+        if(whitePlayer){
+            makeBoard.run("white", board);
+        }else {
+            makeBoard.run("black", board);
+        }
+        return "";
+    }
+
+    public String makeMove(String... params){
         ChessBoard board = gameList.get(gameID).board();
         if (params.length >= 2) {
             try {
@@ -106,6 +118,7 @@ public class ClientRequest {
         }else{
             throw new BadRequestException("Expected: <START POSITION> <END POSITION>");
         }
+        return "";
     }
 
     public ChessPosition getPos(String position){
