@@ -43,7 +43,7 @@ public class ConnectionManager {
         ArrayList<Connection> connectionList = connections.get(gameID);
         for (var connection : connectionList){
             if(connection.session.equals(session)){
-                connectionList.remove(connection.session);
+                connectionList.remove(connection);
             }
         }
     }

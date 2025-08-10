@@ -67,24 +67,24 @@ public class WebSocketHandler {
             return;
         }
 
-        for(GameData game : gameData){
-            if(game.blackUsername().equalsIgnoreCase(userName) || game.whiteUsername().equalsIgnoreCase(userName)){
-                isObserver = false;
-            }else{
-                isObserver = true;
-            }
+        if((currentGame.blackUsername() != null && currentGame.blackUsername().equalsIgnoreCase(userName)) ||
+                (currentGame.whiteUsername() != null && currentGame.whiteUsername().equalsIgnoreCase(userName))){
+            isObserver = false;
+        }else{
+            isObserver = true;
         }
 
         String color = "";
 
-        if(currentGame.whiteUsername().equals(userName)){
+        if(currentGame.whiteUsername() != null && currentGame.whiteUsername().equals(userName)){
             color = "WHITE";
-        }else if(currentGame.blackUsername().equals(userName)){
+        }else if(currentGame.blackUsername() != null && currentGame.blackUsername().equals(userName)){
             color = "BLACK";
         }
 
         switch(command.getCommandType()){
             case CONNECT:
+                //game.setPlayerColor(color, gameID, userName);
                 manager.add(gameID, userName, session);
                 LoadGameServerMessage msg = new LoadGameServerMessage(GameManager.getGame(gameID));
                 manager.broadcastToOnly(gameID, session, msg);
@@ -101,11 +101,13 @@ public class WebSocketHandler {
                 if(isObserver){
                     NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
                     manager.broadcastToBlack(gameID, leftGame, currentGame.blackUsername());
+                    game.setPlayerColor(color, gameID, null);
                     manager.remove(gameID, session);
                     return;
                 }
                 NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
                 manager.broadcastToAllExcept(gameID, session, leftGame);
+                game.setPlayerColor(color, gameID, null);
                 manager.remove(gameID, session);
                 break;
 

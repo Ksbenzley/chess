@@ -33,6 +33,11 @@ public class ServerFacade {
         return data;
     }
 
+    public void leaveGame(int gameID, String color) throws IOException, DeploymentException, URISyntaxException, DataAccessException {
+        WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
+        webSocket.sendLeave();
+    }
+
     public void resign(int gameID, String color) throws DeploymentException, URISyntaxException, IOException, DataAccessException {
         WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
         webSocket.sendResign();

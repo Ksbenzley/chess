@@ -25,7 +25,6 @@ public class ClientRequest {
     private final String serverUrl;
     private String authToken;
     private final HashMap<Integer, GameData> gameList = new HashMap<>();
-    //private final HashMap<Integer, ChessBoard> boardList = new HashMap<>();
     private State state = State.SIGNEDOUT;
     private int gameID;
     private Boolean whitePlayer;
@@ -48,7 +47,7 @@ public class ClientRequest {
                 if(inGameplay){
                     return switch (cmd) {
                         case "redraw" -> redraw();
-                        //case "leave" -> leaveGame();
+                        case "leave" -> leaveGame();
                         case "move" -> makeMove(params);
                         case "resign" -> resign();
                         //case "show" -> showMoves(params);
@@ -76,6 +75,11 @@ public class ClientRequest {
         URISyntaxException | IOException | DataAccessException x) {
             return x.getMessage();
         }
+    }
+
+    public String leaveGame() throws DeploymentException, IOException, URISyntaxException, DataAccessException {
+        server.leaveGame(gameID, "WHITE");
+        return "";
     }
 
     public String resign() throws DeploymentException, URISyntaxException, IOException, DataAccessException {

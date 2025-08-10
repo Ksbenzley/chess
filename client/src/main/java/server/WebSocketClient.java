@@ -52,6 +52,11 @@ public class WebSocketClient extends Endpoint{
 
     }
 
+    public void sendLeave() throws IOException {
+        UserGameCommand leave = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        send(serializer.toJson(leave));
+    }
+
     public void sendResign() throws IOException {
         UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
         send(serializer.toJson(connect));
