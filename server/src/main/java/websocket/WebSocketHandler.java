@@ -84,116 +84,131 @@ public class WebSocketHandler {
 
         switch(command.getCommandType()){
             case CONNECT:
-                //game.setPlayerColor(color, gameID, userName);
-                manager.add(gameID, userName, session);
-                LoadGameServerMessage msg = new LoadGameServerMessage(GameManager.getGame(gameID));
-                manager.broadcastToOnly(gameID, session, msg);
-                if(isObserver){
-                    NotificationServerMessage notif = new NotificationServerMessage(userName + " joined the game as an observer");
-                    manager.broadcastToAllExcept(gameID, session, notif);
-                }else {
-                    NotificationServerMessage notif = new NotificationServerMessage(userName + " joined the game as " + color);
-                    manager.broadcastToAllExcept(gameID, session, notif);
-                }
+                connectCommand(gameID, session, userName, isObserver, color);
                 break;
 
             case LEAVE:
-                if(isObserver){
-                    NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
-                    manager.broadcastToBlack(gameID, leftGame, currentGame.blackUsername());
-                    game.setPlayerColor(color, gameID, null);
-                    manager.remove(gameID, session);
-                    return;
-                }
-                NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
-                manager.broadcastToAllExcept(gameID, session, leftGame);
-                game.setPlayerColor(color, gameID, null);
-                manager.remove(gameID, session);
+                leaveCommand(gameID, session, userName, color, isObserver, currentGame);
                 break;
 
             case RESIGN:
-                ChessGame chessGame = GameManager.getGame(gameID);
-                if(isObserver){
-                    ErrorServerMessage observerResign = new ErrorServerMessage("Error: observer cannot resign");
-                    manager.broadcastToOnly(gameID, session, observerResign);
-                    return;
-                }
-                if(chessGame.getGameOver()){
-                    ErrorServerMessage alreadyResigned = new ErrorServerMessage("Error: the game has already finished");
-                    manager.broadcastToOnly(gameID, session, alreadyResigned);
-                    return;
-                }
-                manager.resignGame(gameID, session);
-                NotificationServerMessage resigned = new NotificationServerMessage(userName + " has resigned");
-                manager.broadcastToAll(gameID, resigned);
-                chessGame.setGameOver(true);
-                GameManager.removeGame(gameID);
-                GameManager.addGame(gameID, chessGame);
+                resignCommand(gameID, session, isObserver, userName);
                 return;
 
             case MAKE_MOVE:
-                Gson makeSerializer = new Gson();
-                MakeMoveCommand makeCommand = makeSerializer.fromJson(message, MakeMoveCommand.class);
-                ChessMove move = makeCommand.getMove();
-
-                ChessGame chessGameData = GameManager.getGame(gameID);
-                ChessBoard realBoard = chessGameData.getBoard();
-
-                //checking if move is made by an observer
-                if(isObserver){
-                    ErrorServerMessage observerMove = new ErrorServerMessage("Error: observer cannot make moves");
-                    manager.broadcastToOnly(gameID, session, observerMove);
-                    return;
-                }
-
-                //checking if game is over
-                if(chessGameData.isInCheckmate(ChessGame.TeamColor.WHITE) || chessGameData.isInCheckmate(ChessGame.TeamColor.BLACK)){
-                    chessGameData.setGameOver(true);
-                }
-                if(chessGameData.getGameOver()){
-                    ErrorServerMessage gameOver = new ErrorServerMessage("Error: game is over");
-                    manager.broadcastToOnly(gameID, session, gameOver);
-                    return;
-                }
-
-                //checking for valid move
-                if(manager.validateMove(move, realBoard)){
-
-                    //checking for wrong turn
-                    if(!chessGameData.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))){
-                        ErrorServerMessage wrongTurn = new ErrorServerMessage("Error: not your turn");
-                        manager.broadcastToOnly(gameID, session, wrongTurn);
-                        return;
-                    }
-                    manager.makeMove(move, realBoard);
-
-                    //switch team turn
-                    if(chessGameData.getTeamTurn() == ChessGame.TeamColor.WHITE){
-                        chessGameData.setTeamTurn(ChessGame.TeamColor.BLACK);
-                    }else{
-                        chessGameData.setTeamTurn(ChessGame.TeamColor.WHITE);
-                    }
-
-                    //sending notifications
-                    LoadGameServerMessage updateGame = new LoadGameServerMessage(GameManager.getGame(gameID));
-                    manager.broadcastToAll(gameID, updateGame);
-                    NotificationServerMessage notification = new NotificationServerMessage(
-                            userName + " moved from " + translate(move.getStartPosition()) + " to " + translate(move.getEndPosition()));
-                    manager.broadcastToAllExcept(gameID, session, notification);
-                    if(chessGameData.isInCheckmate(chessGameData.getTeamTurn())){
-                        NotificationServerMessage checkMate = new NotificationServerMessage(chessGameData.getTeamTurn() + " is now in check mate");
-                        manager.broadcastToAll(gameID, checkMate);
-                    }else if(chessGameData.isInCheck(chessGameData.getTeamTurn())){
-                        NotificationServerMessage checkMate = new NotificationServerMessage(chessGameData.getTeamTurn() + " is now in check");
-                        manager.broadcastToAll(gameID, checkMate);
-                    }
-                    //switch team turn here?
-                }else{
-                    ErrorServerMessage invalidMove = new ErrorServerMessage("Error: invalid move");
-                    manager.broadcastToOnly(gameID, session, invalidMove);
-                }
-
+                makeMoveCommand(gameID, session, isObserver, color, userName, message);
                 break;
+        }
+    }
+
+    public void makeMoveCommand(int gameID, Session session, Boolean isObserver, String color, String userName, String message) throws IOException {
+        Gson makeSerializer = new Gson();
+        MakeMoveCommand makeCommand = makeSerializer.fromJson(message, MakeMoveCommand.class);
+        ChessMove move = makeCommand.getMove();
+
+        ChessGame chessGameData = GameManager.getGame(gameID);
+        ChessBoard realBoard = chessGameData.getBoard();
+
+        //checking if move is made by an observer
+        if(isObserver){
+            ErrorServerMessage observerMove = new ErrorServerMessage("Error: observer cannot make moves");
+            manager.broadcastToOnly(gameID, session, observerMove);
+            return;
+        }
+
+        //checking if game is over
+        if(chessGameData.isInCheckmate(ChessGame.TeamColor.WHITE) || chessGameData.isInCheckmate(ChessGame.TeamColor.BLACK)){
+            chessGameData.setGameOver(true);
+        }
+        if(chessGameData.getGameOver()){
+            ErrorServerMessage gameOver = new ErrorServerMessage("Error: game is over");
+            manager.broadcastToOnly(gameID, session, gameOver);
+            return;
+        }
+
+        //checking for valid move
+        if(manager.validateMove(move, realBoard)){
+
+            //checking for wrong turn
+            if(!chessGameData.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))){
+                ErrorServerMessage wrongTurn = new ErrorServerMessage("Error: not your turn");
+                manager.broadcastToOnly(gameID, session, wrongTurn);
+                return;
+            }
+            manager.makeMove(move, realBoard);
+
+            //switch team turn
+            if(chessGameData.getTeamTurn() == ChessGame.TeamColor.WHITE){
+                chessGameData.setTeamTurn(ChessGame.TeamColor.BLACK);
+            }else{
+                chessGameData.setTeamTurn(ChessGame.TeamColor.WHITE);
+            }
+
+            //sending notifications
+            LoadGameServerMessage updateGame = new LoadGameServerMessage(GameManager.getGame(gameID));
+            manager.broadcastToAll(gameID, updateGame);
+            NotificationServerMessage notification = new NotificationServerMessage(
+                    userName + " moved from " + translate(move.getStartPosition()) + " to " + translate(move.getEndPosition()));
+            manager.broadcastToAllExcept(gameID, session, notification);
+            if(chessGameData.isInCheckmate(chessGameData.getTeamTurn())){
+                NotificationServerMessage checkMate = new NotificationServerMessage(chessGameData.getTeamTurn() + " is now in check mate");
+                manager.broadcastToAll(gameID, checkMate);
+            }else if(chessGameData.isInCheck(chessGameData.getTeamTurn())){
+                NotificationServerMessage checkMate = new NotificationServerMessage(chessGameData.getTeamTurn() + " is now in check");
+                manager.broadcastToAll(gameID, checkMate);
+            }
+            //switch team turn here?
+        }else{
+            ErrorServerMessage invalidMove = new ErrorServerMessage("Error: invalid move");
+            manager.broadcastToOnly(gameID, session, invalidMove);
+        }
+    }
+
+    public void resignCommand(int gameID, Session session, Boolean isObserver, String userName) throws IOException {
+        ChessGame chessGame = GameManager.getGame(gameID);
+        if(isObserver){
+            ErrorServerMessage observerResign = new ErrorServerMessage("Error: observer cannot resign");
+            manager.broadcastToOnly(gameID, session, observerResign);
+            return;
+        }
+        if(chessGame.getGameOver()){
+            ErrorServerMessage alreadyResigned = new ErrorServerMessage("Error: the game has already finished");
+            manager.broadcastToOnly(gameID, session, alreadyResigned);
+            return;
+        }
+        manager.resignGame(gameID, session);
+        NotificationServerMessage resigned = new NotificationServerMessage(userName + " has resigned");
+        manager.broadcastToAll(gameID, resigned);
+        chessGame.setGameOver(true);
+        GameManager.removeGame(gameID);
+        GameManager.addGame(gameID, chessGame);
+    }
+
+    public void leaveCommand(int gameID, Session session, String userName, String color, Boolean isObserver, GameData currentGame) throws IOException, DataAccessException {
+        if(isObserver){
+            NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
+            manager.broadcastToBlack(gameID, leftGame, currentGame.blackUsername());
+            game.setPlayerColor(color, gameID, null);
+            manager.remove(gameID, session);
+            return;
+        }
+        NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
+        manager.broadcastToAllExcept(gameID, session, leftGame);
+        game.setPlayerColor(color, gameID, null);
+        manager.remove(gameID, session);
+    }
+
+    public void connectCommand(int gameID, Session session, String userName, Boolean isObserver, String color) throws IOException {
+        //game.setPlayerColor(color, gameID, userName);
+        manager.add(gameID, userName, session);
+        LoadGameServerMessage msg = new LoadGameServerMessage(GameManager.getGame(gameID));
+        manager.broadcastToOnly(gameID, session, msg);
+        if(isObserver){
+            NotificationServerMessage notif = new NotificationServerMessage(userName + " joined the game as an observer");
+            manager.broadcastToAllExcept(gameID, session, notif);
+        }else {
+            NotificationServerMessage notif = new NotificationServerMessage(userName + " joined the game as " + color);
+            manager.broadcastToAllExcept(gameID, session, notif);
         }
     }
 

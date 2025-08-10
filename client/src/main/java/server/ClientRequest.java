@@ -167,11 +167,7 @@ public class ClientRequest {
             if (!gameList.containsKey(gameNum)) {
                 throw new BadRequestException("Error: game number out of range" + "\n");
             }
-//            ChessBoard newBoard = new ChessBoard();
-//            newBoard.resetBoard();
-//            boardList.put(gameList.get(gameID).gameID(), newBoard);
-//            Board makeBoard = new Board();
-//            makeBoard.run("WHITE", newBoard);
+
             server.observeGame(gameNum, authToken, gameList.get(gameNum).gameID(), "WHITE");
             System.out.println("Now observing: " + gameList.get(gameNum).gameName() + "\n");
             return "";
@@ -201,11 +197,6 @@ public class ClientRequest {
 
             server.playGame(authToken, gameList.get(gameNum).gameID(), color);
 
-//            ChessBoard newBoard = new ChessBoard();
-//            newBoard.resetBoard();
-//            boardList.put(gameList.get(gameNum).gameID(), newBoard);
-//            Board makeBoard = new Board();
-//            makeBoard.run(color, newBoard);
             inGameplay = true;
             System.out.print("Now playing in: " + gameList.get(gameNum).gameName() + "\n");
             return "";
