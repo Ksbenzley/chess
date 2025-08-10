@@ -1,6 +1,5 @@
 package server;
 
-import chess.ChessBoard;
 import chess.ChessMove;
 import com.google.gson.JsonObject;
 import exceptions.*;
@@ -20,6 +19,7 @@ public class ServerFacade {
 
     public final String serverUrl;
     public String authToken;
+    public String userName;
 
     public ServerFacade(String url) {
         this.serverUrl = url;
@@ -30,22 +30,23 @@ public class ServerFacade {
         LoginRequest request = new LoginRequest(userData.username(), userData.password());
         AuthData data = this.makeRequest("POST", path, request, AuthData.class);
         authToken = data.authToken();
+        userName = data.username();
         return data;
     }
 
     public void leaveGame(int gameID, String color) throws IOException, DeploymentException, URISyntaxException, DataAccessException {
-        WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
+        WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false, userName);
         webSocket.sendLeave();
     }
 
     public void resign(int gameID, String color) throws DeploymentException, URISyntaxException, IOException, DataAccessException {
-        WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
+        WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false, userName);
         webSocket.sendResign();
     }
 
     public void makeMove(ChessMove move, int gameID, String color){
         try {
-            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true);
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true, userName);
             webSocket.sendMakeMove(move);
         }catch (Exception e){
             e.printStackTrace();
@@ -93,7 +94,7 @@ public class ServerFacade {
         this.makeRequest("PUT", path, game, null);
 
         try {
-            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true);
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true, userName);
             webSocket.sendConnect();
         }catch (Exception e){
             e.printStackTrace();
@@ -106,7 +107,7 @@ public class ServerFacade {
         this.makeRequest("PUT", path, request, null);
 
         try {
-            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false);
+            WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, false, userName);
             webSocket.sendConnect();
         }catch (Exception e){
             e.printStackTrace();
