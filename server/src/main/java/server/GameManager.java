@@ -6,18 +6,18 @@ import java.util.HashMap;
 
 public class GameManager {
 
-    private static final HashMap<Integer, ChessGame> saverMap = new HashMap<>();
+    private static final HashMap<Integer, ChessGame> Saver = new HashMap<>();
 
     public static void addGame(int gameID, ChessGame game){
-        saverMap.put(gameID, game);
+        Saver.put(gameID, game);
     }
 
     public static void removeGame(int gameID){
-        saverMap.remove(gameID);
+        Saver.remove(gameID);
     }
 
     public static ChessGame getGame(int gameID){
-        return saverMap.get(gameID);
+        return Saver.get(gameID);
     }
 
 }

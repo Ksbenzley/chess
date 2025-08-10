@@ -184,7 +184,8 @@ public class WebSocketHandler {
         GameManager.addGame(gameID, chessGame);
     }
 
-    public void leaveCommand(int gameID, Session session, String userName, String color, Boolean isObserver, GameData currentGame) throws IOException, DataAccessException {
+    public void leaveCommand(int gameID, Session session, String userName, String color, Boolean isObserver, GameData currentGame)
+            throws IOException, DataAccessException {
         if(isObserver){
             NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
             manager.broadcastToBlack(gameID, leftGame, currentGame.blackUsername());
