@@ -98,10 +98,15 @@ public class WebSocketHandler {
                 break;
 
             case LEAVE:
+                if(isObserver){
+                    NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
+                    manager.broadcastToBlack(gameID, leftGame, currentGame.blackUsername());
+                    manager.remove(gameID, session);
+                    return;
+                }
                 NotificationServerMessage leftGame = new NotificationServerMessage(userName + " has left the game");
                 manager.broadcastToAllExcept(gameID, session, leftGame);
                 manager.remove(gameID, session);
-                game.setPlayerColor(color, gameID, null);
                 break;
 
             case RESIGN:
@@ -116,6 +121,7 @@ public class WebSocketHandler {
                     manager.broadcastToOnly(gameID, session, alreadyResigned);
                     return;
                 }
+                manager.resignGame(gameID, session);
                 NotificationServerMessage resigned = new NotificationServerMessage(userName + " has resigned");
                 manager.broadcastToAll(gameID, resigned);
                 chessGame.setGameOver(true);

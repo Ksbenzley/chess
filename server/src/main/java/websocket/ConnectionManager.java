@@ -1,6 +1,7 @@
 package websocket;
 
 import chess.ChessMove;
+import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
@@ -20,7 +21,6 @@ public class ConnectionManager {
         if(!connections.containsKey(gameID)){
             connections.put(gameID, new ArrayList<>());
         }
-
         connections.get(gameID).add(con);
     }
 
@@ -43,7 +43,7 @@ public class ConnectionManager {
         ArrayList<Connection> connectionList = connections.get(gameID);
         for (var connection : connectionList){
             if(connection.session.equals(session)){
-                connectionList.remove(session);
+                connectionList.remove(connection.session);
             }
         }
     }
@@ -55,6 +55,16 @@ public class ConnectionManager {
 
     public void broadcastToOnly(int gameID, Session session, ServerMessage message) throws IOException {
         session.getRemote().sendString(message.toString());
+    }
+
+    public void broadcastToBlack(int gameID, ServerMessage message, String blackUserName) throws IOException {
+        ArrayList<Connection> connectionList = connections.get(gameID);
+        if(connectionList == null){ return; };
+        for (var connection : connectionList){
+            if(connection.userName.equalsIgnoreCase(blackUserName)){
+                connection.session.getRemote().sendString(message.toString());
+            }
+        }
     }
 
     public void broadcastToAllExcept(int gameID, Session session, NotificationServerMessage message) throws IOException {
