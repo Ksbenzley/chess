@@ -232,6 +232,8 @@ public class ClientRequest {
     public String createGame(String... params) throws BadRequestException {
         if (params.length >= 1) {
             String name = params[0];
+//            GameData game = server.createGame(name);
+//            gameList.put(game.gameID(), game);
             server.createGame(name);
             System.out.println("game created: " + name);
             loadGames();

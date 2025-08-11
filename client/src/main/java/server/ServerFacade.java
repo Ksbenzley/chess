@@ -8,7 +8,6 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import requests.*;
-
 import javax.websocket.DeploymentException;
 import java.io.*;
 import java.net.*;
@@ -177,6 +176,7 @@ public class ServerFacade {
                     throw new NotAuthorizedException("Error: Not Authorized\n");
                 }
                 case 403 -> throw new AlreadyTakenException(error + "\n");
+                case 500 -> throw new BadRequestException("Error: server error\n");
                 default -> throw new BadRequestException(error + "\n");
             }
         }

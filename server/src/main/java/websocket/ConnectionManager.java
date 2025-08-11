@@ -1,9 +1,7 @@
 package websocket;
 
 import chess.ChessMove;
-import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
 import java.io.IOException;
 import java.util.ArrayList;

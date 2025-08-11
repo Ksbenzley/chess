@@ -20,7 +20,6 @@ public class WebSocketClient extends Endpoint{
 
     public Session session;
     public String userName;
-    //AuthDAO authDAO;
     public TeamColor teamColor;
     private Gson serializer = new Gson();
     private final String authToken;
@@ -28,7 +27,7 @@ public class WebSocketClient extends Endpoint{
     private String color;
     private Boolean isObserver;
 
-    public WebSocketClient(String authToken, int gameID, String color, Boolean isObserver, String username)
+    public WebSocketClient(String authToken, int gameID, String color, Boolean isObserver, String userName)
             throws BadRequestException, URISyntaxException, DeploymentException, IOException, DataAccessException {
 
         this.authToken = authToken;
@@ -44,11 +43,9 @@ public class WebSocketClient extends Endpoint{
         }else{
             this.teamColor = null;
         }
-        //userName = authDAO.getUser(authToken);
         URI uri = new URI("ws://localhost:8080/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
-
     }
 
     public void sendLeave() throws IOException {
