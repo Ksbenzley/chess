@@ -25,7 +25,7 @@ public class Handler {
     }
 
     private static void createDB(){
-        //if(!created){
+        if(!created){
             try{
                 userDAO = new SQLUserDAO();
                 gameDAO = new SQLGameDAO();
@@ -36,7 +36,7 @@ public class Handler {
                 authDAO = new MemoryAuthDAO();
             }
             created = true;
-        //}
+        }
     }
 
     public static AuthDAO getAuthDAO(){
