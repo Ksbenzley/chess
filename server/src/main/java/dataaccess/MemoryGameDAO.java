@@ -1,4 +1,5 @@
 package dataaccess;
+import chess.ChessBoard;
 import model.*;
 import java.util.ArrayList;
 import java.util.HashMap;

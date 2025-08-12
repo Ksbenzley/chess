@@ -1,9 +1,6 @@
 package server;
 
-import chess.ChessBoard;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import exceptions.DataAccessException;
 import exceptions.NotAuthorizedException;
 import ui.*;
@@ -79,6 +76,7 @@ public class ClientRequest {
 
     public String leaveGame() throws DeploymentException, IOException, URISyntaxException, DataAccessException {
         server.leaveGame(gameID, "WHITE");
+        inGameplay = false;
         return "";
     }
 
@@ -92,7 +90,7 @@ public class ClientRequest {
     }
 
     public String redraw(){
-        ChessBoard board = gameList.get(gameID).board();
+        ChessBoard board = GameManager.getGame(gameID).getBoard();
         Board makeBoard = new Board();
         if(whitePlayer){
             makeBoard.run("white", board);
@@ -103,19 +101,11 @@ public class ClientRequest {
     }
 
     public String makeMove(String... params){
-        ChessBoard board = gameList.get(gameID).board();
         if (params.length >= 2) {
             try {
                 ChessPosition start = getPos(params[0]);
                 ChessPosition end = getPos(params[1]);
-                ChessPiece.PieceType piece = board.getPiece(start).getPieceType();
-
-                if (piece == null) {
-                    throw new BadRequestException("No piece at starting position.");
-                }
-
-                ChessMove move = new ChessMove(start, end, piece);
-                server.makeMove(move, gameID, null);
+                server.makeMove(start, end, gameID, "WHITE");
             } catch (Exception e) {
                 System.out.print(e.getMessage());
             }
@@ -126,33 +116,22 @@ public class ClientRequest {
     }
 
     public ChessPosition getPos(String position){
-        char row = position.charAt(1);
-        char col = position.charAt(0);
-        if(whitePlayer) {
-            switch (col) {
-                case 'a' -> col = 1;
-                case 'b' -> col = 2;
-                case 'c' -> col = 3;
-                case 'd' -> col = 4;
-                case 'e' -> col = 5;
-                case 'f' -> col = 6;
-                case 'g' -> col = 7;
-                case 'h' -> col = 8;
-            }
-        }else{
-            switch (col) {
-                case 'a' -> col = 8;
-                case 'b' -> col = 7;
-                case 'c' -> col = 6;
-                case 'd' -> col = 5;
-                case 'e' -> col = 4;
-                case 'f' -> col = 3;
-                case 'g' -> col = 2;
-                case 'h' -> col = 1;
-            }
+        char rowChar = position.charAt(1);
+        char colChar = position.charAt(0);
+        int col = 0;
+        switch (colChar) {
+            case 'a' -> col = 1;
+            case 'b' -> col = 2;
+            case 'c' -> col = 3;
+            case 'd' -> col = 4;
+            case 'e' -> col = 5;
+            case 'f' -> col = 6;
+            case 'g' -> col = 7;
+            case 'h' -> col = 8;
         }
-        ChessPosition pos = new ChessPosition(row, col);
-        return pos;
+
+        int row = rowChar - '0';
+        return new ChessPosition(row, col);
     }
 
     public String observeGame(String... params) throws BadRequestException {
@@ -177,11 +156,11 @@ public class ClientRequest {
     }
 
     public String playGame(String... params) throws BadRequestException, NumberFormatException {
+        loadGames();
         if (params.length >= 2) {
             int gameNum;
             try {
                 gameNum = Integer.parseInt(params[0]);
-                gameID = Integer.parseInt(params[0]);
                 if (gameList.size() < gameNum || gameNum <= 0){
                     throw new BadRequestException("Error: game number out of range" + "\n");
                 }
@@ -195,6 +174,7 @@ public class ClientRequest {
                 whitePlayer = false;
             }
 
+            this.gameID = gameList.get(gameNum).gameID();
             server.playGame(authToken, gameList.get(gameNum).gameID(), color);
 
             inGameplay = true;
@@ -232,9 +212,8 @@ public class ClientRequest {
     public String createGame(String... params) throws BadRequestException {
         if (params.length >= 1) {
             String name = params[0];
-//            GameData game = server.createGame(name);
-//            gameList.put(game.gameID(), game);
-            server.createGame(name);
+            GameData gameData = server.createGame(name);
+            this.gameID = gameData.gameID();
             System.out.println("game created: " + name);
             loadGames();
             return "";

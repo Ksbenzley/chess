@@ -15,8 +15,6 @@ import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
 import server.*;
 import websocket.messages.NotificationServerMessage;
-
-import javax.management.Notification;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -102,11 +100,12 @@ public class WebSocketHandler {
     public void makeMoveCommand(int gameID, Session session, Boolean isObserver, String color, String userName, String message) throws IOException {
         Gson makeSerializer = new Gson();
         MakeMoveCommand makeCommand = makeSerializer.fromJson(message, MakeMoveCommand.class);
-        ChessMove move = makeCommand.getMove();
 
         ChessGame chessGameData = GameManager.getGame(gameID);
         ChessBoard realBoard = chessGameData.getBoard();
-
+        ChessMove move = new ChessMove(makeCommand.getStart(), makeCommand.getEnd(), realBoard.getPiece(makeCommand.getStart()).getPieceType());
+        String colors = chessGameData.getTeamTurn().toString();
+        //color = chessGameData.getTeamTurn().toString();
         //checking if move is made by an observer
         if(isObserver){
             ErrorServerMessage observerMove = new ErrorServerMessage("Error: observer cannot make moves");
@@ -128,7 +127,7 @@ public class WebSocketHandler {
         if(manager.validateMove(move, realBoard)){
 
             //checking for wrong turn
-            if(!chessGameData.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))){
+            if(!chessGameData.getTeamTurn().toString().equalsIgnoreCase(color)){
                 ErrorServerMessage wrongTurn = new ErrorServerMessage("Error: not your turn");
                 manager.broadcastToOnly(gameID, session, wrongTurn);
                 return;
@@ -145,9 +144,11 @@ public class WebSocketHandler {
             //sending notifications
             LoadGameServerMessage updateGame = new LoadGameServerMessage(GameManager.getGame(gameID));
             manager.broadcastToAll(gameID, updateGame);
+
             NotificationServerMessage notification = new NotificationServerMessage(
                     userName + " moved from " + translate(move.getStartPosition()) + " to " + translate(move.getEndPosition()));
             manager.broadcastToAllExcept(gameID, session, notification);
+
             if(chessGameData.isInCheckmate(chessGameData.getTeamTurn())){
                 NotificationServerMessage checkMate = new NotificationServerMessage(chessGameData.getTeamTurn() + " is now in check mate");
                 manager.broadcastToAll(gameID, checkMate);
@@ -155,7 +156,6 @@ public class WebSocketHandler {
                 NotificationServerMessage checkMate = new NotificationServerMessage(chessGameData.getTeamTurn() + " is now in check");
                 manager.broadcastToAll(gameID, checkMate);
             }
-            //switch team turn here?
         }else{
             ErrorServerMessage invalidMove = new ErrorServerMessage("Error: invalid move");
             manager.broadcastToOnly(gameID, session, invalidMove);
@@ -209,6 +209,7 @@ public class WebSocketHandler {
             NotificationServerMessage notif = new NotificationServerMessage(userName + " joined the game as " + color);
             manager.broadcastToAllExcept(gameID, session, notif);
         }
+
     }
 
     public String translate(ChessPosition pos){

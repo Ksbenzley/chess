@@ -1,6 +1,7 @@
 package server;
 
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.JsonObject;
 import exceptions.*;
 import com.google.gson.Gson;
@@ -43,10 +44,10 @@ public class ServerFacade {
         webSocket.sendResign();
     }
 
-    public void makeMove(ChessMove move, int gameID, String color){
+    public void makeMove(ChessPosition start, ChessPosition end, int gameID, String color){
         try {
             WebSocketClient webSocket = new WebSocketClient(authToken, gameID, color, true, userName);
-            webSocket.sendMakeMove(move);
+            webSocket.sendMakeMove(start, end);
         }catch (Exception e){
             e.printStackTrace();
         }

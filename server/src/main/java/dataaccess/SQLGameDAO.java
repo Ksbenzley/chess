@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessBoard;
+import com.google.gson.Gson;
 import exceptions.DataAccessException;
 import model.GameData;
 
@@ -151,8 +153,8 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public Integer addGame(int gameID, String gameName) throws DataAccessException{
         String sql = "INSERT INTO gameData (id, gameName) VALUES (?, ?);";
-        try(var comm = DatabaseManager.getConnection();
-            var prepState = comm.prepareStatement(sql)){
+        try(var conn = DatabaseManager.getConnection();
+            var prepState = conn.prepareStatement(sql)){
 
             prepState.setInt(1, gameID);
             prepState.setString(2, gameName);
